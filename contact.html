@@ -1,1 +1,34 @@
-<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Contact</title></head><body>Contact Page Content</body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact - Ink N Threadworks</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <header>
+    <h1>Request a Quote</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="contact.html">Contact</a>
+      <button id="darkModeToggle">🌙</button>
+    </nav>
+  </header>
+  <main>
+    <form action="https://formspree.io/f/your-form-id" method="POST" enctype="multipart/form-data">
+      <label>Name: <input type="text" name="name" required></label>
+      <label>Phone: <input type="tel" name="phone"></label>
+      <label>Email: <input type="email" name="email" required></label>
+      <label>Address: <input type="text" name="address"></label>
+      <label>Product Description: <textarea name="description"></textarea></label>
+      <label>Location on Product: <input type="text" name="location"></label>
+      <label>Upload Artwork: <input type="file" name="file"></label>
+      <button type="submit">Send Request</button>
+    </form>
+  </main>
+  <script src="js/main.js"></script>
+</body>
+</html>

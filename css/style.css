@@ -1,1 +1,18 @@
-body { font-family: Arial, sans-serif; background: #fff; color: #000; }
+body {
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0; padding: 0;
+}
+header { padding: 1em; background: var(--header-bg); }
+nav a { margin: 0 1em; }
+:root {
+  --bg: #ffffff;
+  --text: #000000;
+  --header-bg: #ddd;
+}
+body.dark-mode {
+  --bg: #121212;
+  --text: #f0f0f0;
+  --header-bg: #222;
+}
