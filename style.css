@@ -1,0 +1,6 @@
+
+/* Modern catalog layout */
+body { font-family: sans-serif; margin: 2rem; background: #f9f9f9; }
+.product-card { display: inline-block; width: 200px; margin: 1rem; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+.product-card img { width: 100%; display: block; }
+.product-card h3 { font-size: 1rem; margin: 0.5rem; }
