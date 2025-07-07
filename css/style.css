@@ -1,126 +1,71 @@
-/* === Base styles === */
 body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f7f9fc;
+  background: #f9f9f9;
   color: #333;
-  line-height: 1.6;
 }
 
-header {
-  background: #1f2937;
+.site-header {
+  background: #222;
   color: #fff;
-  padding: 20px;
+  padding: 1rem 2rem;
   text-align: center;
 }
 
-header h1 {
-  margin: 0;
-  font-size: 2rem;
+.site-header nav {
+  margin-top: 0.5rem;
 }
 
-main {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
-
-/* === About page specific === */
-.about {
-  text-align: left;
-}
-
-.about h2 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-  color: #1f2937;
-}
-
-.about p {
-  font-size: 1rem;
-  margin-bottom: 15px;
-}
-
-.about img {
-  max-width: 200px;
-  border-radius: 8px;
-  margin-top: 20px;
-}
-
-/* === Catalog page specific === */
-.search-bar {
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.search-bar input {
-  width: 60%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  font-size: 1rem;
-}
-
-#catalog-results {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-.catalog-item {
-  background: #fff;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  padding: 15px;
-  text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-}
-
-.catalog-item:hover {
-  transform: translateY(-5px);
-}
-
-.catalog-item img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 10px;
-  border-radius: 4px;
-}
-
-.catalog-item h3 {
-  margin: 0 0 5px;
-  font-size: 1.1rem;
-  color: #1f2937;
-}
-
-.catalog-item p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-/* === Buttons and links === */
-a.button, button {
-  background: #1f2937;
+.site-header nav .btn {
   color: #fff;
-  padding: 10px 20px;
+  background: #444;
   border: none;
-  border-radius: 25px;
+  padding: 0.5rem 1rem;
+  margin: 0 0.25rem;
   text-decoration: none;
-  font-size: 1rem;
-  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.site-header nav .btn:hover,
+.site-header nav .btn.active {
+  background: #007acc;
+}
+
+.page-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.home-actions {
+  margin-top: 2rem;
+}
+
+.home-actions .btn.primary {
+  background: #007acc;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  margin-right: 1rem;
   display: inline-block;
   transition: background 0.3s ease;
 }
 
-a.button:hover, button:hover {
-  background: #374151;
+.home-actions .btn.primary:hover {
+  background: #005f99;
 }
 
-/* === Responsive === */
-@media (max-width: 600px) {
-  .search-bar input {
-    width: 90%;
-  }
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #222;
+  color: #fff;
+  margin-top: 4rem;
+}
+
+a:focus {
+  outline: 2px dashed #007acc;
+  outline-offset: 2px;
 }
