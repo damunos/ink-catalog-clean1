@@ -1,127 +1,126 @@
+/* === Base styles === */
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  background: #f9f9f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f9fc;
   color: #333;
+  line-height: 1.6;
 }
 
-.site-header {
-  background: #222;
+header {
+  background: #1f2937;
   color: #fff;
-  padding: 1rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.site-header h1 {
-  margin: 0;
-}
-
-.site-header nav {
-  margin-top: 1rem;
-}
-
-.site-header .btn {
-  display: inline-block;
-  margin: 0 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #555;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background 0.3s ease;
-}
-
-.site-header .btn:hover {
-  background: #0078d7;
-}
-
-.site-header .btn.active {
-  background: #0078d7;
-}
-
-.contact-container {
-  max-width: 600px;
-  background: #fff;
-  margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.contact-container h2 {
-  margin-top: 0;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: bold;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.btn.primary {
-  background: #0078d7;
-  color: #fff;
-  border: none;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.btn.primary:hover {
-  background: #005fa3;
-}
-
-#form-status {
-  margin-top: 1rem;
-  font-weight: bold;
-}
-.page-container {
-  max-width: 800px;
-  background: #fff;
-  margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 8px;
+  padding: 20px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.page-container h2 {
-  margin-top: 0;
+header h1 {
+  margin: 0;
+  font-size: 2rem;
 }
 
-.home-actions {
-  margin-top: 2rem;
+main {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
-.home-actions .btn {
-  margin: 0.5rem;
+/* === About page specific === */
+.about {
+  text-align: left;
 }
 
-.btn.primary {
-  background: #0078d7;
-  color: #fff;
-  border: none;
-  text-decoration: none;
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
+.about h2 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  color: #1f2937;
+}
+
+.about p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.about img {
+  max-width: 200px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* === Catalog page specific === */
+.search-bar {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar input {
+  width: 60%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+}
+
+#catalog-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.catalog-item {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.catalog-item:hover {
+  transform: translateY(-5px);
+}
+
+.catalog-item img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
   border-radius: 4px;
+}
+
+.catalog-item h3 {
+  margin: 0 0 5px;
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.catalog-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* === Buttons and links === */
+a.button, button {
+  background: #1f2937;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-block;
   transition: background 0.3s ease;
 }
 
-.btn.primary:hover {
-  background: #005fa3;
+a.button:hover, button:hover {
+  background: #374151;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .search-bar input {
+    width: 90%;
+  }
 }
