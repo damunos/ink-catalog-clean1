@@ -6,32 +6,56 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
+  <header class="site-header">
+    <h1>Ink N Threadworks</h1>
+    <nav>
+      <a href="index.html" class="btn">Home</a>
+      <a href="catalog.html" class="btn">Catalog</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="contact.html" class="btn active">Contact</a>
+    </nav>
+  </header>
+
   <main class="contact-container">
-    <h1>Contact Us</h1>
-    <p>Fill out the form below to request a quote or ask a question. Attach any artwork files too!</p>
+    <h2>Contact Us</h2>
+    <p>Fill out the form below to get your custom quote and upload your artwork!</p>
     <form id="contact-form" enctype="multipart/form-data">
-      <label>Name</label>
-      <input type="text" name="name" required />
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" required />
+      </div>
 
-      <label>Email</label>
-      <input type="email" name="email" required />
+      <div class="form-group">
+        <label>Email *</label>
+        <input type="email" name="email" required />
+      </div>
 
-      <label>Phone</label>
-      <input type="tel" name="phone" />
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" />
+      </div>
 
-      <label>Description</label>
-      <textarea name="description" rows="4" required></textarea>
+      <div class="form-group">
+        <label>Description *</label>
+        <textarea name="description" rows="4" required></textarea>
+      </div>
 
-      <label>Product Location</label>
-      <input type="text" name="location" placeholder="e.g., front chest, sleeve" />
+      <div class="form-group">
+        <label>Product Location</label>
+        <input type="text" name="location" placeholder="e.g., left chest, sleeve" />
+      </div>
 
-      <label>Address</label>
-      <textarea name="address" rows="2"></textarea>
+      <div class="form-group">
+        <label>Address</label>
+        <textarea name="address" rows="2"></textarea>
+      </div>
 
-      <label>Attach Artwork</label>
-      <input type="file" name="file" accept=".jpg,.png,.pdf,.ai,.eps,.svg" />
+      <div class="form-group">
+        <label>Attach Artwork</label>
+        <input type="file" name="file" accept=".jpg,.png,.pdf,.ai,.eps,.svg" />
+      </div>
 
-      <button type="submit">Send Request</button>
+      <button type="submit" class="btn primary">Send Request</button>
     </form>
     <div id="form-status"></div>
   </main>

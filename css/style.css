@@ -1,42 +1,91 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background: #f8f8f8;
-  color: #222;
+  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 0;
+  background: #f9f9f9;
+  color: #333;
 }
 
-.header, .footer {
+.site-header {
   background: #222;
   color: #fff;
-  padding: 1em;
-  text-align: center;
-}
-
-.search-bar {
+  padding: 1rem 2rem;
   display: flex;
-  gap: 1em;
-  margin: 1em auto;
-  max-width: 600px;
+  flex-direction: column;
+  align-items: center;
 }
 
-#results {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1em;
-  padding: 1em;
+.site-header h1 {
+  margin: 0;
 }
 
-.product-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 1em;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.site-header nav {
+  margin-top: 1rem;
 }
 
-.product-card img {
-  max-width: 100%;
-  height: auto;
+.site-header .btn {
+  display: inline-block;
+  margin: 0 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #555;
+  color: #fff;
+  text-decoration: none;
   border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.site-header .btn:hover {
+  background: #0078d7;
+}
+
+.site-header .btn.active {
+  background: #0078d7;
+}
+
+.contact-container {
+  max-width: 600px;
+  background: #fff;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contact-container h2 {
+  margin-top: 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn.primary {
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.btn.primary:hover {
+  background: #005fa3;
+}
+
+#form-status {
+  margin-top: 1rem;
+  font-weight: bold;
 }
