@@ -89,3 +89,39 @@ body {
   margin-top: 1rem;
   font-weight: bold;
 }
+.page-container {
+  max-width: 800px;
+  background: #fff;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.page-container h2 {
+  margin-top: 0;
+}
+
+.home-actions {
+  margin-top: 2rem;
+}
+
+.home-actions .btn {
+  margin: 0.5rem;
+}
+
+.btn.primary {
+  background: #0078d7;
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.btn.primary:hover {
+  background: #005fa3;
+}
