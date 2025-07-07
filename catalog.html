@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Catalog - Ink N Threadworks</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <title>Catalog | Ink N Threadworks</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header>
-    <h1>Product Catalog</h1>
+    <h1>Ink N Threadworks</h1>
     <nav>
       <a href="index.html">Home</a>
-      <a href="about.html">About</a>
       <a href="catalog.html">Catalog</a>
       <a href="contact.html">Contact</a>
-      <button id="darkModeToggle">🌙</button>
+      <a href="about.html">About</a>
     </nav>
   </header>
+
   <main>
-    <input type="text" id="searchBar" placeholder="Search products..."/>
-    <div id="productGrid"></div>
+    <section class="catalog-section">
+      <h2>Browse Our Catalog</h2>
+
+      <div class="catalog-filters">
+        <input type="text" id="searchBox" placeholder="Search by name or brand..." />
+        <select id="categoryFilter">
+          <option value="">All Categories</option>
+          <!-- Populated dynamically by catalog.js -->
+        </select>
+      </div>
+
+      <div id="productGrid" class="product-grid">
+        <!-- Product cards rendered here -->
+      </div>
+    </section>
   </main>
-  <script src="js/main.js"></script>
+
+  <footer>
+    <p>&copy; 2025 Ink N Threadworks | <a href="mailto:inknthreadworks@tsrus.com">inknthreadworks@tsrus.com</a></p>
+  </footer>
+
+  <script src="js/catalog.js"></script>
 </body>
 </html>
