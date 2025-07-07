@@ -1,34 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact - Ink N Threadworks</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <meta charset="UTF-8" />
+  <title>Contact Us | Ink N Threadworks</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <header>
-    <h1>Request a Quote</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="about.html">About</a>
-      <a href="catalog.html">Catalog</a>
-      <a href="contact.html">Contact</a>
-      <button id="darkModeToggle">🌙</button>
-    </nav>
-  </header>
-  <main>
-    <form action="https://formspree.io/f/your_form_id" method="POST" enctype="multipart/form-data">
-      <label>Name: <input type="text" name="name" required></label>
-      <label>Phone: <input type="tel" name="phone"></label>
-      <label>Email: <input type="email" name="email" required></label>
-      <label>Address: <input type="text" name="address"></label>
-      <label>Product Description: <textarea name="description"></textarea></label>
-      <label>Location on Product: <input type="text" name="location"></label>
-      <label>Upload Artwork: <input type="file" name="file"></label>
+  <main class="contact-container">
+    <h1>Contact Us</h1>
+    <p>Fill out the form below to request a quote or ask a question. Attach any artwork files too!</p>
+    <form id="contact-form" enctype="multipart/form-data">
+      <label>Name</label>
+      <input type="text" name="name" required />
+
+      <label>Email</label>
+      <input type="email" name="email" required />
+
+      <label>Phone</label>
+      <input type="tel" name="phone" />
+
+      <label>Description</label>
+      <textarea name="description" rows="4" required></textarea>
+
+      <label>Product Location</label>
+      <input type="text" name="location" placeholder="e.g., front chest, sleeve" />
+
+      <label>Address</label>
+      <textarea name="address" rows="2"></textarea>
+
+      <label>Attach Artwork</label>
+      <input type="file" name="file" accept=".jpg,.png,.pdf,.ai,.eps,.svg" />
+
       <button type="submit">Send Request</button>
     </form>
+    <div id="form-status"></div>
   </main>
-  <script src="js/main.js"></script>
 </body>
+<script src="js/contact.js"></script>
 </html>
