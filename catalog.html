@@ -3,36 +3,35 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ink N Threadworks Catalog</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Ink Catalog</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <h1>Ink N Threadworks Product Catalog</h1>
-    <nav>
-      <a href="index.html" class="btn">Home</a>
-      <a href="about.html" class="btn">About Us</a>
-      <a href="contact.html" class="btn">Contact</a>
-    </nav>
+    <h1>Product Catalog</h1>
   </header>
 
-  <main class="page-container">
-    <div class="filters">
-      <input type="text" id="searchBox" placeholder="Search by style, title or brand..." />
+  <main>
+    <div class="search-filter">
+      <input
+        type="text"
+        id="searchBox"
+        placeholder="Search by style or title..."
+      />
       <select id="categoryFilter">
         <option value="">All Categories</option>
       </select>
     </div>
 
-    <div id="productGrid">
-      <!-- Product cards will be rendered here by catalog.js -->
+    <div id="productGrid" class="product-grid">
+      <!-- Product cards will be injected here -->
     </div>
   </main>
 
   <footer>
-    &copy; 2025 Ink N Threadworks. All rights reserved.
+    <p>&copy; 2025 Ink N Threadworks</p>
   </footer>
 
-  <script src="js/catalog.js"></script>
+  <script src="catalog.js"></script>
 </body>
 </html>

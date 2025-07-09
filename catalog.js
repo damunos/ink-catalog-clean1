@@ -1,21 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 
-  // Load BOTH parts of the JSON catalog
+  // Load both JSON parts if you split the catalog
   Promise.all([
     fetch('sanmar_catalog_part1.json').then(res => res.json()),
     fetch('sanmar_catalog_part2.json').then(res => res.json())
   ])
-    .then(([part1, part2]) => {
-      products = [...part1, ...part2];
-      console.log(`Loaded ${products.length} products`);
-
+    .then(data => {
+      products = [...data[0], ...data[1]];
       populateCategoryFilter(products);
       renderProducts(products);
     })
-    .catch(err => {
-      console.error('Error loading catalog JSON:', err);
-    });
+    .catch(error => console.error('Error loading catalog JSON:', error));
 
   const searchBox = document.getElementById('searchBox');
   const categoryFilter = document.getElementById('categoryFilter');
@@ -36,8 +32,10 @@ function populateCategoryFilter(products) {
   const categories = new Set();
 
   products.forEach(product => {
-    const catParts = product.category.split(';').map(c => c.trim()).filter(Boolean);
-    catParts.forEach(cat => categories.add(cat));
+    const cats = product.category.split(';').map(cat => cat.trim());
+    cats.forEach(cat => {
+      if (cat) categories.add(cat);
+    });
   });
 
   categories.forEach(cat => {
@@ -50,8 +48,7 @@ function populateCategoryFilter(products) {
 
 function filterProducts(products, searchTerm, category) {
   return products.filter(product => {
-    const matchesCategory =
-      !category || product.category.includes(category);
+    const matchesCategory = !category || product.category.includes(category);
     const matchesSearch =
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.style.toLowerCase().includes(searchTerm.toLowerCase());
@@ -72,9 +69,9 @@ function renderProducts(products) {
     const card = document.createElement('div');
     card.className = 'product-card';
 
-    const img = document.createElement('img');
-    img.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.thumbnail}`;
-    img.alt = product.title;
+    const thumb = document.createElement('img');
+    thumb.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.thumbnail}`;
+    thumb.alt = product.title;
 
     const title = document.createElement('h3');
     title.textContent = product.title;
@@ -83,9 +80,9 @@ function renderProducts(products) {
     description.textContent = product.description;
 
     const price = document.createElement('p');
-    price.textContent = `MSRP: $${product.msrp} | MAP: $${product.map_pricing}`;
+    price.textContent = product.price_text;
 
-    card.appendChild(img);
+    card.appendChild(thumb);
     card.appendChild(title);
     card.appendChild(description);
     card.appendChild(price);
