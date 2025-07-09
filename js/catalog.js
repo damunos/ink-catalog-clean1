@@ -1,9 +1,7 @@
-// js/catalog.js
-
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 
-  // Load the JSON data
+  // Load JSON
   fetch('sanmar_catalog.json')
     .then(response => response.json())
     .then(data => {
@@ -11,36 +9,36 @@ document.addEventListener('DOMContentLoaded', () => {
       populateCategoryFilter(products);
       renderProducts(products);
     })
-    .catch(error => console.error('Error loading catalog JSON:', error));
+    .catch(err => {
+      console.error('Error loading catalog JSON:', err);
+    });
 
   const searchBox = document.getElementById('searchBox');
   const categoryFilter = document.getElementById('categoryFilter');
 
-  // Search input listener
   searchBox.addEventListener('input', () => {
     const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
     renderProducts(filtered);
   });
 
-  // Category dropdown listener
   categoryFilter.addEventListener('change', () => {
     const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
     renderProducts(filtered);
   });
 });
 
-// Populate the category filter dropdown
 function populateCategoryFilter(products) {
   const categoryFilter = document.getElementById('categoryFilter');
-  const categories = new Set(products.map(p => p.category_name.trim()).filter(Boolean));
+  const categories = new Set();
 
-  // Add default option
-  const defaultOption = document.createElement('option');
-  defaultOption.value = '';
-  defaultOption.textContent = 'All Categories';
-  categoryFilter.appendChild(defaultOption);
+  products.forEach(p => {
+    if (p.category) {
+      p.category.split(';').forEach(cat => {
+        if (cat.trim()) categories.add(cat.trim());
+      });
+    }
+  });
 
-  // Add categories
   categories.forEach(cat => {
     const option = document.createElement('option');
     option.value = cat;
@@ -49,20 +47,17 @@ function populateCategoryFilter(products) {
   });
 }
 
-// Filter products based on search and category
 function filterProducts(products, searchTerm, category) {
   return products.filter(product => {
-    const matchesCategory = !category || product.category_name === category;
-    const search = searchTerm.toLowerCase();
-    const matchesSearch =
-      product.product_title.toLowerCase().includes(search) ||
-      product.style_number.toLowerCase().includes(search) ||
-      (product.product_description && product.product_description.toLowerCase().includes(search));
+    const matchesCategory = !category || (product.category && product.category.includes(category));
+    const matchesSearch = (
+      product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.style?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     return matchesCategory && matchesSearch;
   });
 }
 
-// Render the filtered products
 function renderProducts(products) {
   const productGrid = document.getElementById('productGrid');
   productGrid.innerHTML = '';
@@ -76,35 +71,19 @@ function renderProducts(products) {
     const card = document.createElement('div');
     card.className = 'product-card';
 
-    // Brand logo
-    if (product.brand_logo_image) {
-      const brandLogo = document.createElement('img');
-      brandLogo.src = `SDL/BRAND_LOGO_IMAGE/${product.brand_logo_image}`;
-      brandLogo.alt = product.style_number;
-      brandLogo.className = 'brand-logo';
-      card.appendChild(brandLogo);
-    }
-
-    // Main thumbnail
-    if (product.variants && product.variants.length > 0) {
-      const thumb = document.createElement('img');
-      thumb.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.variants[0].thumbnail}`;
-      thumb.alt = product.product_title;
-      thumb.className = 'product-thumb';
-      card.appendChild(thumb);
-    }
-
-    // Title
     const title = document.createElement('h3');
-    title.textContent = product.product_title;
-    card.appendChild(title);
+    title.textContent = product.title;
 
-    // Description
-    if (product.product_description) {
-      const description = document.createElement('p');
-      description.textContent = product.product_description;
-      card.appendChild(description);
-    }
+    const description = document.createElement('p');
+    description.textContent = product.description;
+
+    const thumb = document.createElement('img');
+    thumb.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.thumbnail}`;
+    thumb.alt = product.title;
+
+    card.appendChild(thumb);
+    card.appendChild(title);
+    card.appendChild(description);
 
     productGrid.appendChild(card);
   });
