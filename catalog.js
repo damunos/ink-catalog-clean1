@@ -1,17 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 
-  // Load both JSON parts if you split the catalog
+  // ✅ Load multiple JSON parts and merge
   Promise.all([
     fetch('sanmar_catalog_part1.json').then(res => res.json()),
     fetch('sanmar_catalog_part2.json').then(res => res.json())
   ])
-    .then(data => {
-      products = [...data[0], ...data[1]];
+    .then(([part1, part2]) => {
+      products = part1.concat(part2);
       populateCategoryFilter(products);
       renderProducts(products);
     })
-    .catch(error => console.error('Error loading catalog JSON:', error));
+    .catch(err => {
+      console.error('Error loading catalog JSON:', err);
+    });
 
   const searchBox = document.getElementById('searchBox');
   const categoryFilter = document.getElementById('categoryFilter');
@@ -32,10 +34,11 @@ function populateCategoryFilter(products) {
   const categories = new Set();
 
   products.forEach(product => {
-    const cats = product.category.split(';').map(cat => cat.trim());
-    cats.forEach(cat => {
-      if (cat) categories.add(cat);
-    });
+    if (product.category) {
+      product.category.split(';').forEach(cat => {
+        if (cat.trim()) categories.add(cat.trim());
+      });
+    }
   });
 
   categories.forEach(cat => {
@@ -79,13 +82,13 @@ function renderProducts(products) {
     const description = document.createElement('p');
     description.textContent = product.description;
 
-    const price = document.createElement('p');
-    price.textContent = product.price_text;
+    const style = document.createElement('p');
+    style.innerHTML = `<strong>Style:</strong> ${product.style}`;
 
     card.appendChild(thumb);
     card.appendChild(title);
     card.appendChild(description);
-    card.appendChild(price);
+    card.appendChild(style);
 
     productGrid.appendChild(card);
   });
