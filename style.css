@@ -1,6 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ink N Threadworks | Product Catalog</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Ink N Threadworks Catalog</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-/* Modern catalog layout */
-body { font-family: sans-serif; margin: 2rem; background: #f9f9f9; }
-.product-card { display: inline-block; width: 200px; margin: 1rem; background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-.product-card img { width: 100%; display: block; }
-.product-card h3 { font-size: 1rem; margin: 0.5rem; }
+  <main>
+    <section class="filters">
+      <div class="filter-group">
+        <label for="searchBox">Search Products:</label>
+        <input type="text" id="searchBox" name="searchBox" placeholder="Search by name, style, brand" />
+      </div>
+
+      <div class="filter-group">
+        <label for="categoryFilter">Filter by Category:</label>
+        <select id="categoryFilter" name="categoryFilter">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+    </section>
+
+    <section id="productGrid" class="product-grid">
+      <!-- Product cards will be rendered here -->
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Ink N Threadworks</p>
+  </footer>
+
+  <script src="js/catalog.js"></script>
+</body>
+</html>
