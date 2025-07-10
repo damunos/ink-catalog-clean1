@@ -6,16 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
     header: true,
     skipEmptyLines: true,
     complete: function(results) {
-      console.log('CSV parsed:', results);
+      console.log('Headers:', results.meta.fields);
+      console.log('First row:', results.data[0]);
+
       const data = results.data;
 
-      productGrid.innerHTML = ''; // clear placeholder
+      if (!data.length) {
+        productGrid.innerHTML = '<p>No products found in CSV.</p>';
+        return;
+      }
+
+      productGrid.innerHTML = ''; // Clear loading text
 
       data.forEach(product => {
         const card = document.createElement('div');
         card.className = 'product-card';
 
-        // Use your actual CSV column names here:
         const img = document.createElement('img');
         img.src = product.THUMBNAIL_IMAGE || 'https://via.placeholder.com/150';
         img.alt = product.PRODUCT_TITLE || 'Product Image';
