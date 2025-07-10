@@ -1,0 +1,17 @@
+[33mcommit 180b9b787d38de3ecaafd19eca55f19026735db1[m
+Author: damunos <damunos@gmail.com>
+Date:   Thu Jul 10 00:56:39 2025 -0400
+
+    Split CSV to stay under 100MB
+
+[33mcommit 7fe0e5f37705df4205493484d3693af89ac3ae50[m
+Author: damunos <damunos@gmail.com>
+Date:   Thu Jul 10 00:53:18 2025 -0400
+
+    Add catalog with LFS
+
+[33mcommit 0aa1f4e2fc70914d9b3f526ca912d2a1b3c92bce[m
+Author: damunos <damunos@gmail.com>
+Date:   Thu Jul 10 00:47:46 2025 -0400
+
+    Replace JSON data loading with CSV parsing and remove unused JSON files
