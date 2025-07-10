@@ -3,35 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ink Catalog</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Product Catalog</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header>
     <h1>Product Catalog</h1>
-  </header>
-
-  <main>
-    <div class="search-filter">
-      <input
-        type="text"
-        id="searchBox"
-        placeholder="Search by style or title..."
-      />
+    <div class="filters">
+      <input type="text" id="searchBox" placeholder="Search by name or style number">
       <select id="categoryFilter">
         <option value="">All Categories</option>
       </select>
     </div>
+  </header>
 
-    <div id="productGrid" class="product-grid">
-      <!-- Product cards will be injected here -->
-    </div>
+  <main id="productGrid" class="product-grid">
+    <!-- Product cards will be injected here -->
   </main>
 
-  <footer>
-    <p>&copy; 2025 Ink N Threadworks</p>
-  </footer>
-
-  <script src="catalog.js"></script>
+  <!-- Load PapaParse from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <!-- Your custom script -->
+  <script src="js/catalog.js"></script>
 </body>
 </html>
