@@ -2,19 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Catalog</title>
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- 🟢 Load PapaParse from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <h1>Product Catalog</h1>
+  <header>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="catalog.html">Catalog</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
 
-  <!-- This is where your products will display -->
-  <div id="catalog"></div>
+  <main>
+    <h1>Our Catalog</h1>
+    <div id="filters">
+      <!-- Add filter options if you want -->
+    </div>
+    <div id="productGrid" class="product-grid">
+      Loading products...
+    </div>
+  </main>
 
-  <!-- 🟢 Your script -->
+  <!-- PapaParse for CSV parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <!-- Your custom script -->
   <script src="js/catalog.js"></script>
 </body>
 </html>

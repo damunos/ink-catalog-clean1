@@ -1,53 +1,40 @@
-// js/catalog.js
+document.addEventListener('DOMContentLoaded', () => {
+  const productGrid = document.getElementById('productGrid');
 
-function loadCSVParts() {
-  const files = [
-    'sanmar_catalog_part1.csv',
-    'sanmar_catalog_part2.csv'
-  ];
+  Papa.parse('sanmar_catalog_part1.csv', {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      console.log('CSV parsed:', results);
+      const data = results.data;
 
-  const allData = [];
+      productGrid.innerHTML = ''; // clear placeholder
 
-  const promises = files.map(file =>
-    fetch(file)
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! ${response.status}`);
-        return response.text();
-      })
-      .then(csv => Papa.parse(csv, { header: true }).data)
-  );
+      data.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
 
-  Promise.all(promises)
-    .then(results => {
-      results.forEach(part => allData.push(...part));
-      console.log("Combined CSV Data:", allData);
-      displayCatalog(allData);
-    })
-    .catch(error => {
-      console.error('Error loading CSV parts:', error);
-    });
-}
+        // Use your actual CSV column names here:
+        const img = document.createElement('img');
+        img.src = product.THUMBNAIL_IMAGE || 'https://via.placeholder.com/150';
+        img.alt = product.PRODUCT_TITLE || 'Product Image';
+        card.appendChild(img);
 
-function displayCatalog(data) {
-  const container = document.getElementById('catalog');
-  if (!container) return;
+        const title = document.createElement('h3');
+        title.textContent = product.PRODUCT_TITLE || 'Untitled';
+        card.appendChild(title);
 
-  // Clear any existing content
-  container.innerHTML = '';
+        const desc = document.createElement('p');
+        desc.textContent = product.PRODUCT_DESCRIPTION || '';
+        card.appendChild(desc);
 
-  data.forEach(item => {
-    // Skip empty rows (sometimes PapaParse adds a blank)
-    if (!item.PRODUCT_TITLE && !item.STYLE_NUMBER) return;
-
-    const div = document.createElement('div');
-    div.className = 'product-item';
-    div.innerHTML = `
-      <h3>${item.PRODUCT_TITLE || 'No Title'}</h3>
-      <p>Style #: ${item.STYLE_NUMBER || 'N/A'}</p>
-      <p>Category: ${item.CATEGORY_NAME || 'N/A'}</p>
-    `;
-    container.appendChild(div);
+        productGrid.appendChild(card);
+      });
+    },
+    error: function(err) {
+      console.error('Error loading CSV:', err);
+      productGrid.innerHTML = '<p>Error loading products.</p>';
+    }
   });
-}
-
-document.addEventListener('DOMContentLoaded', loadCSVParts);
+});
