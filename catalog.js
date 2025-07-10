@@ -1,90 +1,53 @@
-document.addEventListener('DOMContentLoaded', () => {
-  let products = [];
+// js/catalog.js
 
-  // Load CSV with PapaParse
-  Papa.parse('sanmar_catalog.csv', {
-    header: true,
-    download: true,
-    complete: function(results) {
-      products = results.data;
-      populateCategoryFilter(products);
-      renderProducts(products);
-    },
-    error: function(err) {
-      console.error('Error loading CSV:', err);
-    }
-  });
+function loadCSVParts() {
+  const files = [
+    'sanmar_catalog_part1.csv',
+    'sanmar_catalog_part2.csv'
+  ];
 
-  const searchBox = document.getElementById('searchBox');
-  const categoryFilter = document.getElementById('categoryFilter');
+  const allData = [];
 
-  searchBox.addEventListener('input', () => {
-    const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
-    renderProducts(filtered);
-  });
+  const promises = files.map(file =>
+    fetch(file)
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! ${response.status}`);
+        return response.text();
+      })
+      .then(csv => Papa.parse(csv, { header: true }).data)
+  );
 
-  categoryFilter.addEventListener('change', () => {
-    const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
-    renderProducts(filtered);
-  });
-});
+  Promise.all(promises)
+    .then(results => {
+      results.forEach(part => allData.push(...part));
+      console.log("Combined CSV Data:", allData);
+      displayCatalog(allData);
+    })
+    .catch(error => {
+      console.error('Error loading CSV parts:', error);
+    });
+}
 
-function populateCategoryFilter(products) {
-  const categoryFilter = document.getElementById('categoryFilter');
-  const categories = new Set();
+function displayCatalog(data) {
+  const container = document.getElementById('catalog');
+  if (!container) return;
 
-  products.forEach(p => {
-    if (p.category) {
-      p.category.split(';').forEach(cat => {
-        categories.add(cat.trim());
-      });
-    }
-  });
+  // Clear any existing content
+  container.innerHTML = '';
 
-  categories.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat;
-    option.textContent = cat;
-    categoryFilter.appendChild(option);
+  data.forEach(item => {
+    // Skip empty rows (sometimes PapaParse adds a blank)
+    if (!item.PRODUCT_TITLE && !item.STYLE_NUMBER) return;
+
+    const div = document.createElement('div');
+    div.className = 'product-item';
+    div.innerHTML = `
+      <h3>${item.PRODUCT_TITLE || 'No Title'}</h3>
+      <p>Style #: ${item.STYLE_NUMBER || 'N/A'}</p>
+      <p>Category: ${item.CATEGORY_NAME || 'N/A'}</p>
+    `;
+    container.appendChild(div);
   });
 }
 
-function filterProducts(products, searchTerm, category) {
-  return products.filter(product => {
-    const matchesCategory = !category || product.category.includes(category);
-    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.style.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-}
-
-function renderProducts(products) {
-  const productGrid = document.getElementById('productGrid');
-  productGrid.innerHTML = '';
-
-  if (products.length === 0) {
-    productGrid.innerHTML = '<p>No products found.</p>';
-    return;
-  }
-
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-
-    const title = document.createElement('h3');
-    title.textContent = product.title;
-
-    const thumb = document.createElement('img');
-    thumb.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.thumbnail}`;
-    thumb.alt = product.title;
-
-    const description = document.createElement('p');
-    description.textContent = product.description;
-
-    card.appendChild(thumb);
-    card.appendChild(title);
-    card.appendChild(description);
-
-    productGrid.appendChild(card);
-  });
-}
+document.addEventListener('DOMContentLoaded', loadCSVParts);
