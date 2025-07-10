@@ -1,22 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
   let products = [];
 
-  // Load the JSON data
-  fetch('sanmar_catalog_part1.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      products = data;
+  // Load CSV with PapaParse
+  Papa.parse('sanmar_catalog.csv', {
+    header: true,
+    download: true,
+    complete: function(results) {
+      products = results.data;
       populateCategoryFilter(products);
       renderProducts(products);
-    })
-    .catch(error => {
-      console.error('Error loading catalog JSON:', error);
-    });
+    },
+    error: function(err) {
+      console.error('Error loading CSV:', err);
+    }
+  });
 
   const searchBox = document.getElementById('searchBox');
   const categoryFilter = document.getElementById('categoryFilter');
@@ -38,9 +35,8 @@ function populateCategoryFilter(products) {
 
   products.forEach(p => {
     if (p.category) {
-      const cats = p.category.split(';').map(cat => cat.trim());
-      cats.forEach(cat => {
-        if (cat) categories.add(cat);
+      p.category.split(';').forEach(cat => {
+        categories.add(cat.trim());
       });
     }
   });
