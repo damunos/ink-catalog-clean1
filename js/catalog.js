@@ -1,85 +1,69 @@
 document.addEventListener('DOMContentLoaded', () => {
-  let products = [];
+  const productGrid = document.getElementById('productGrid');
+  const searchInput = document.getElementById('searchInput');
 
-  // Load JSON data
-  fetch('sanmar_catalog.json')
-    .then(res => res.json())
-    .then(data => {
-      console.log("Loaded", data.length, "products.");
-      products = data;
-      populateCategoryFilter(products);
-      renderProducts(products);
-    })
-    .catch(error => console.error('Error loading catalog JSON:', error));
+  let catalogData = []; // Store CSV rows here for searching
 
-  const searchBox = document.getElementById('searchBox');
-  const categoryFilter = document.getElementById('categoryFilter');
+  // Load CSV with PapaParse
+  Papa.parse('sanmar_catalog_part1.csv', {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      console.log('CSV loaded. Headers:', results.meta.fields);
+      console.log('Sample row:', results.data[0]);
 
-  searchBox.addEventListener('input', () => {
-    const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
-    renderProducts(filtered);
-  });
+      catalogData = results.data;
 
-  categoryFilter.addEventListener('change', () => {
-    const filtered = filterProducts(products, searchBox.value, categoryFilter.value);
-    renderProducts(filtered);
-  });
-});
+      if (!catalogData.length) {
+        productGrid.innerHTML = '<p>No products found in CSV.</p>';
+        return;
+      }
 
-function populateCategoryFilter(products) {
-  const categoryFilter = document.getElementById('categoryFilter');
-  const categories = new Set();
-  products.forEach(p => {
-    if (p.category) {
-      p.category.split(';').forEach(cat => categories.add(cat.trim()));
+      renderProducts(catalogData);
+    },
+    error: function(err) {
+      console.error('Error loading CSV:', err);
+      productGrid.innerHTML = '<p>Error loading products.</p>';
     }
   });
 
-  categories.forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat;
-    option.textContent = cat;
-    categoryFilter.appendChild(option);
-  });
-}
+  // Render helper function
+  function renderProducts(data) {
+    productGrid.innerHTML = ''; // Clear old results
+    if (!data.length) {
+      productGrid.innerHTML = '<p>No products match your search.</p>';
+      return;
+    }
 
-function filterProducts(products, searchTerm, category) {
-  return products.filter(product => {
-    const matchesCategory = !category || product.category.includes(category);
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.style.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-}
+    data.forEach(product => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
 
-function renderProducts(products) {
-  const productGrid = document.getElementById('productGrid');
-  productGrid.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = product.THUMBNAIL_IMAGE || 'https://via.placeholder.com/150';
+      img.alt = product.PRODUCT_TITLE || 'Product Image';
+      card.appendChild(img);
 
-  if (products.length === 0) {
-    productGrid.innerHTML = '<p>No products found.</p>';
-    return;
+      const title = document.createElement('h3');
+      title.textContent = product.PRODUCT_TITLE || 'Untitled';
+      card.appendChild(title);
+
+      const desc = document.createElement('p');
+      desc.textContent = product.PRODUCT_DESCRIPTION || '';
+      card.appendChild(desc);
+
+      productGrid.appendChild(card);
+    });
   }
 
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-
-    const thumb = document.createElement('img');
-    thumb.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.thumbnail}`;
-    thumb.alt = product.title;
-
-    const title = document.createElement('h3');
-    title.textContent = product.title;
-
-    const desc = document.createElement('p');
-    desc.textContent = product.description;
-
-    card.appendChild(thumb);
-    card.appendChild(title);
-    card.appendChild(desc);
-
-    productGrid.appendChild(card);
+  // Search input listener
+  searchInput.addEventListener('keyup', (e) => {
+    const query = e.target.value.toLowerCase();
+    const filtered = catalogData.filter(product =>
+      product.PRODUCT_TITLE.toLowerCase().includes(query) ||
+      product.PRODUCT_DESCRIPTION.toLowerCase().includes(query)
+    );
+    renderProducts(filtered);
   });
-}
+});
