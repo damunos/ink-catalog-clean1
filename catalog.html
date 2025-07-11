@@ -2,33 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Catalog</title>
+  <title>Ink Catalog</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="catalog.html">Catalog</a>
-      <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
-    </nav>
+    <h1>Ink N Threadworks Catalog</h1>
   </header>
 
   <main>
-    <h1>Our Catalog</h1>
-    <div id="filters">
-      <!-- Add filter options if you want -->
+    <div id="search">
+      <input type="text" id="searchInput" placeholder="Search products..." />
     </div>
-    <div id="productGrid" class="product-grid">
-      Loading products...
-    </div>
+
+    <div id="filters"></div>
+
+    <div id="productGrid"></div>
   </main>
 
-  <!-- PapaParse for CSV parsing -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <!-- Your custom script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="js/catalog.js"></script>
 </body>
 </html>

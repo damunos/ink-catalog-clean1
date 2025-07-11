@@ -1,69 +1,62 @@
-document.addEventListener('DOMContentLoaded', () => {
+let catalogData = [];
+
+function renderProducts(products) {
   const productGrid = document.getElementById('productGrid');
-  const searchInput = document.getElementById('searchInput');
+  productGrid.innerHTML = '';
 
-  let catalogData = []; // Store CSV rows here for searching
+  products.forEach(product => {
+    const card = document.createElement('div');
+    card.classList.add('product-card');
 
-  // Load CSV with PapaParse
-  Papa.parse('sanmar_catalog_part1.csv', {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      console.log('CSV loaded. Headers:', results.meta.fields);
-      console.log('Sample row:', results.data[0]);
+    const title = document.createElement('h3');
+    title.textContent = product.PRODUCT_TITLE || 'No Title';
 
-      catalogData = results.data;
+    const desc = document.createElement('p');
+    desc.textContent = product.PRODUCT_DESCRIPTION || '';
 
-      if (!catalogData.length) {
-        productGrid.innerHTML = '<p>No products found in CSV.</p>';
-        return;
-      }
+    const img = document.createElement('img');
+    img.src = product.THUMBNAIL_IMAGE || '';
+    img.alt = product.PRODUCT_TITLE || 'Product';
 
-      renderProducts(catalogData);
-    },
-    error: function(err) {
-      console.error('Error loading CSV:', err);
-      productGrid.innerHTML = '<p>Error loading products.</p>';
-    }
+    card.appendChild(img);
+    card.appendChild(title);
+    card.appendChild(desc);
+
+    productGrid.appendChild(card);
   });
+}
 
-  // Render helper function
-  function renderProducts(data) {
-    productGrid.innerHTML = ''; // Clear old results
-    if (!data.length) {
-      productGrid.innerHTML = '<p>No products match your search.</p>';
-      return;
-    }
+Papa.parse('sanmar_catalog_part1.csv', {
+  download: true,
+  header: true,
+  complete: function(results) {
+    catalogData = results.data.filter(p => p.PRODUCT_TITLE);
 
-    data.forEach(product => {
-      const card = document.createElement('div');
-      card.className = 'product-card';
+    renderProducts(catalogData);
 
-      const img = document.createElement('img');
-      img.src = product.THUMBNAIL_IMAGE || 'https://via.placeholder.com/150';
-      img.alt = product.PRODUCT_TITLE || 'Product Image';
-      card.appendChild(img);
+    // Build category buttons
+    const uniqueCategories = [...new Set(catalogData.map(p => p.CATEGORY_NAME).filter(Boolean))];
+    const filtersDiv = document.getElementById('filters');
 
-      const title = document.createElement('h3');
-      title.textContent = product.PRODUCT_TITLE || 'Untitled';
-      card.appendChild(title);
+    uniqueCategories.forEach(category => {
+      const btn = document.createElement('button');
+      btn.textContent = category;
+      btn.addEventListener('click', () => {
+        const filtered = catalogData.filter(p => p.CATEGORY_NAME === category);
+        renderProducts(filtered);
+      });
+      filtersDiv.appendChild(btn);
+    });
 
-      const desc = document.createElement('p');
-      desc.textContent = product.PRODUCT_DESCRIPTION || '';
-      card.appendChild(desc);
-
-      productGrid.appendChild(card);
+    // Setup search
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = catalogData.filter(p =>
+        p.PRODUCT_TITLE.toLowerCase().includes(query) ||
+        p.PRODUCT_DESCRIPTION.toLowerCase().includes(query)
+      );
+      renderProducts(filtered);
     });
   }
-
-  // Search input listener
-  searchInput.addEventListener('keyup', (e) => {
-    const query = e.target.value.toLowerCase();
-    const filtered = catalogData.filter(product =>
-      product.PRODUCT_TITLE.toLowerCase().includes(query) ||
-      product.PRODUCT_DESCRIPTION.toLowerCase().includes(query)
-    );
-    renderProducts(filtered);
-  });
 });
