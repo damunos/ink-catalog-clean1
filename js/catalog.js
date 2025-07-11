@@ -1,62 +1,79 @@
-let catalogData = [];
+document.addEventListener('DOMContentLoaded', function () {
+  const catalogUrl = "https://raw.githubusercontent.com/damunos/ink-catalog-clean1/master/sanmar_catalog_part1.csv";
+  const searchInput = document.getElementById('search-input');
+  const categorySelect = document.getElementById('category-select');
+  const productContainer = document.getElementById('product-list');
 
-function renderProducts(products) {
-  const productGrid = document.getElementById('productGrid');
-  productGrid.innerHTML = '';
+  // Load CSV with Papa Parse
+  Papa.parse(catalogUrl, {
+    download: true,
+    header: true,
+    complete: function (results) {
+      console.log("CSV loaded:", results);
+      const products = results.data;
+      const categories = getUniqueCategories(products);
+      populateCategories(categories);
+      displayProducts(products);
 
-  products.forEach(product => {
-    const card = document.createElement('div');
-    card.classList.add('product-card');
-
-    const title = document.createElement('h3');
-    title.textContent = product.PRODUCT_TITLE || 'No Title';
-
-    const desc = document.createElement('p');
-    desc.textContent = product.PRODUCT_DESCRIPTION || '';
-
-    const img = document.createElement('img');
-    img.src = product.THUMBNAIL_IMAGE || '';
-    img.alt = product.PRODUCT_TITLE || 'Product';
-
-    card.appendChild(img);
-    card.appendChild(title);
-    card.appendChild(desc);
-
-    productGrid.appendChild(card);
-  });
-}
-
-Papa.parse('sanmar_catalog_part1.csv', {
-  download: true,
-  header: true,
-  complete: function(results) {
-    catalogData = results.data.filter(p => p.PRODUCT_TITLE);
-
-    renderProducts(catalogData);
-
-    // Build category buttons
-    const uniqueCategories = [...new Set(catalogData.map(p => p.CATEGORY_NAME).filter(Boolean))];
-    const filtersDiv = document.getElementById('filters');
-
-    uniqueCategories.forEach(category => {
-      const btn = document.createElement('button');
-      btn.textContent = category;
-      btn.addEventListener('click', () => {
-        const filtered = catalogData.filter(p => p.CATEGORY_NAME === category);
-        renderProducts(filtered);
+      // Search handler
+      searchInput.addEventListener('input', function () {
+        const term = searchInput.value.toLowerCase();
+        const filtered = products.filter(p =>
+          p.PRODUCT_TITLE && p.PRODUCT_TITLE.toLowerCase().includes(term)
+        );
+        displayProducts(filtered);
       });
-      filtersDiv.appendChild(btn);
-    });
 
-    // Setup search
-    const searchInput = document.getElementById('searchInput');
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase();
-      const filtered = catalogData.filter(p =>
-        p.PRODUCT_TITLE.toLowerCase().includes(query) ||
-        p.PRODUCT_DESCRIPTION.toLowerCase().includes(query)
-      );
-      renderProducts(filtered);
+      // Category filter handler
+      categorySelect.addEventListener('change', function () {
+        const selected = categorySelect.value;
+        let filtered = products;
+        if (selected) {
+          filtered = products.filter(p => p.CATEGORY_NAME === selected);
+        }
+        displayProducts(filtered);
+      });
+    }
+  });
+
+  function getUniqueCategories(products) {
+    const set = new Set();
+    products.forEach(p => {
+      if (p.CATEGORY_NAME) {
+        set.add(p.CATEGORY_NAME);
+      }
+    });
+    return Array.from(set).sort();
+  }
+
+  function populateCategories(categories) {
+    categorySelect.innerHTML = '<option value="">All Categories</option>';
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      categorySelect.appendChild(option);
+    });
+  }
+
+  function displayProducts(products) {
+    productContainer.innerHTML = '';
+    if (products.length === 0) {
+      productContainer.innerHTML = '<p>No products found.</p>';
+      return;
+    }
+
+    products.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'product-card';
+
+      div.innerHTML = `
+        <h3>${p.PRODUCT_TITLE || 'No Title'}</h3>
+        <p>${p.CATEGORY_NAME || ''}</p>
+        <p>${p.PRODUCT_DESCRIPTION || ''}</p>
+      `;
+
+      productContainer.appendChild(div);
     });
   }
 });
