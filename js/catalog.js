@@ -3,12 +3,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const categoryFilter = document.getElementById('categoryFilter');
   const productGrid = document.getElementById('productGrid');
 
+  if (!searchInput || !categoryFilter || !productGrid) {
+    console.error('One or more DOM elements not found. Check IDs!');
+    return;
+  }
+
   let products = [];
 
-  // Load both CSV files and combine results
+  // Load and combine CSVs
   Promise.all([
-    fetch('sanmar_catalog_part1.csv').then(res => res.ok ? res.text() : ''),
-    fetch('sanmar_catalog_part2.csv').then(res => res.ok ? res.text() : '')
+    fetch('sanmar_catalog_part1.csv').then(r => r.ok ? r.text() : ''),
+    fetch('sanmar_catalog_part2.csv').then(r => r.ok ? r.text() : '')
   ])
     .then(([csv1, csv2]) => {
       const combinedCSV = `${csv1}\n${csv2}`;
@@ -16,9 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
       populateCategories(products);
       displayProducts(products);
     })
-    .catch(err => {
-      console.error('Error loading CSV:', err);
-    });
+    .catch(err => console.error('Error loading CSV:', err));
 
   function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
@@ -56,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const img = document.createElement('img');
       img.src = product.THUMBNAIL_IMAGE || '';
-      img.alt = product.PRODUCT_TITLE || 'Product';
+      img.alt = product.PRODUCT_TITLE || 'Product Image';
 
       const title = document.createElement('h3');
       title.textContent = product.PRODUCT_TITLE || 'Untitled';

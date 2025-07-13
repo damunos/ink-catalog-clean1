@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Ink Catalog</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Catalog - Ink N Threadworks</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>Ink N Threadworks Catalog</h1>
-  </header>
+  <!-- Top Navigation -->
+  <nav>
+    <button onclick="location.href='index.html'">Home</button>
+    <button onclick="location.href='about.html'">About</button>
+    <button onclick="location.href='contact.html'">Contact</button>
+  </nav>
 
-  <main>
-    <div id="search">
-      <input type="text" id="searchInput" placeholder="Search products..." />
-    </div>
+  <h1>Product Catalog</h1>
 
-    <div id="filters"></div>
+  <!-- Search & Filter -->
+  <input type="text" id="searchInput" placeholder="Search products..." />
+  <select id="categoryFilter"></select>
 
-    <div id="productGrid"></div>
-  </main>
+  <!-- Product Grid -->
+  <div id="productGrid" class="product-grid"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="js/catalog.js"></script>
+  <script src="catalog.js"></script>
 </body>
 </html>
