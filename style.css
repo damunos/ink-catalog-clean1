@@ -124,6 +124,15 @@ h1 {
 
 .product-thumbnail {
   position: relative;
+  width: 63px;
+  height: 72px;
+  overflow: hidden; /* Ensures consistent layout */
+}
+
+.product-thumbnail img {
+  width: 100%; /* Adjust to fit the container */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Optional: Ensures the image fills the container without distortion */
 }
 
 .color-swatches {
