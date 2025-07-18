@@ -2,25 +2,36 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Catalog - Ink N Threadworks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ink N Threadworks Catalog</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Top Navigation -->
-  <nav>
-    <button onclick="location.href='index.html'">Home</button>
-    <button onclick="location.href='about.html'">About</button>
-    <button onclick="location.href='contact.html'">Contact</button>
-  </nav>
+  <header>
+    <h1>Ink N Threadworks Catalog</h1>
+  </header>
 
-  <h1>Product Catalog</h1>
+  <section id="brandBar">
+    <div id="brandLogos" class="brand-logo-container">
+      <!-- Brand logos will be inserted here by JS -->
+    </div>
+  </section>
 
-  <!-- Search & Filter -->
-  <input type="text" id="searchInput" placeholder="Search products..." />
-  <select id="categoryFilter"></select>
+  <section id="filtersContainer">
+    <!-- Filter inputs populated by JS -->
+  </section>
 
-  <!-- Product Grid -->
-  <div id="productGrid" class="product-grid"></div>
+  <main>
+    <div id="productContainer" class="product-grid">
+      <!-- Product cards will be rendered here -->
+    </div>
+  </main>
+
+  <footer>
+    <div id="pageButtons" class="pagination">
+      <!-- Pagination buttons inserted by JS -->
+    </div>
+  </footer>
 
   <script src="catalog.js"></script>
 </body>
