@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Quote Request | Ink N Threadworks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ink N Threadworks Quote Request</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,7 +22,7 @@
       display: block;
       margin-top: 1rem;
     }
-    input, textarea, button {
+    input, textarea, select, button {
       width: 100%;
       padding: 0.75rem;
       margin-top: 0.5rem;
@@ -39,33 +39,86 @@
     button:hover {
       background: #005bb5;
     }
+    small {
+      display: block;
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 0.5rem;
+    }
   </style>
 </head>
 <body>
   <h1>Request a Quote</h1>
-  <form action="https://formspree.io/f/mrbkvvbz" method="POST" enctype="multipart/form-data">
+
+  <form id="quoteForm" action="https://formsubmit.co/el/katami" method="POST">
+    <input type="hidden" name="_subject" value="New Quote Request - Ink N Threadworks">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="artwork_link" id="artworkLink" />
+
     <label for="name">Name*</label>
-    <input type="text" name="name" id="name" placeholder="Your Name" required />
+    <input type="text" name="name" id="name" required />
+
+    <label for="phone">Phone Number*</label>
+    <input type="tel" name="phone" id="phone" required />
 
     <label for="email">Email*</label>
-    <input type="email" name="email" id="email" placeholder="you@example.com" required />
+    <input type="email" name="email" id="email" required />
 
-    <label for="phone">Phone</label>
-    <input type="tel" name="phone" id="phone" placeholder="Your Phone Number" />
+    <label for="description">Project Description</label>
+    <textarea name="description" id="description" rows="4"></textarea>
 
-    <label for="description">Project Description*</label>
-    <textarea name="description" id="description" rows="5" placeholder="Describe your project..." required></textarea>
+    <label for="productIds">Product IDs (from catalog)</label>
+    <input type="text" name="productIds" id="productIds" placeholder="e.g. ST350, PC54" />
 
-    <label for="location">Print/Embroidery Location</label>
-    <input type="text" name="location" id="location" placeholder="Front, Back, Sleeve, etc." />
+    <label for="artLocation">Art Location</label>
+    <input type="text" name="artLocation" id="artLocation" placeholder="e.g. Left chest, full back" />
 
-    <label for="address">Address</label>
-    <textarea name="address" id="address" rows="3" placeholder="Your Address"></textarea>
+    <label for="artType">Type of Art</label>
+    <select name="artType" id="artType">
+      <option value="Screenprinting">Screenprinting</option>
+      <option value="Embroidery">Embroidery</option>
+    </select>
 
-    <label for="artwork">Upload Artwork</label>
-    <input type="file" name="attachment" id="artwork" accept=".jpg,.jpeg,.png,.pdf,.ai,.eps,.svg,.zip" />
+    <label for="address">Shipping Address (if needed)</label>
+    <textarea name="address" id="address" rows="2"></textarea>
+
+    <label for="artFile">Upload Artwork</label>
+    <input type="file" id="artFile" accept=".pdf,.eps,.ai,.svg,.jpg,.jpeg,.png,.zip" />
+    <small>If submitted as PDF/EPS/AI and 300 DPI+, no art charges apply.</small>
 
     <button type="submit">Send Quote Request</button>
   </form>
+
+  <script>
+    const form = document.getElementById('quoteForm');
+    const fileInput = document.getElementById('artFile');
+    const artworkLink = document.getElementById('artworkLink');
+
+    form.addEventListener('submit', async (e) => {
+      if (fileInput.files.length > 0) {
+        e.preventDefault();
+        const file = fileInput.files[0];
+        const data = new FormData();
+        data.append('file', file);
+
+        try {
+          const res = await fetch('https://file.io/?expires=14d', {
+            method: 'POST',
+            body: data
+          });
+          const json = await res.json();
+          if (json.success && json.link) {
+            artworkLink.value = json.link;
+            form.submit();
+          } else {
+            alert('File upload failed. Please try again or use another file type.');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error uploading file. Please try again later.');
+        }
+      }
+    });
+  </script>
 </body>
 </html>

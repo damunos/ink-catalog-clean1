@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ink N Threadworks Catalog</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .product-thumbnail {
+      width: 63px;
+      height: 72px;
+      overflow: hidden; /* Ensures any overflowing part of the image is hidden */
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Ink N Threadworks Catalog</h1>
+    <nav aria-label="Main Navigation">
+      <a href="index.html" class="btn">Home</a>
+      <a href="catalog.html" class="btn active">Catalog</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
+  </header>
+
+  <section id="brandBar">
+    <div id="brandLogos" class="brand-logo-container">
+      <!-- Brand logos will be inserted here by JS -->
+    </div>
+  </section>
+
+  <section id="filtersContainer">
+    <!-- Filter inputs populated by JS -->
+  </section>
+
+  <main>
+    <div id="productContainer" class="product-grid">
+      <!-- Product cards will be rendered here -->
+    </div>
+  </main>
+
+  <footer>
+    <div id="pageButtons" class="pagination">
+      <!-- Pagination buttons inserted by JS -->
+    </div>
+  </footer>
+
+  <script src="catalog.js"></script>
+</body>
+</html>
