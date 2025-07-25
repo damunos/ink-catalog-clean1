@@ -1,51 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <header class="site-header">
-       <nav aria-label="Main Navigation">
-      <a href="index.html" class="btn active">Home</a>
-      <a href="catalog.html" class="btn">Catalog</a>
-      <a href="about.html" class="btn">About Us</a>
-      <a href="contact.html" class="btn">Contact</a>
-    </nav>
-  </header>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ink N Threadworks Catalog</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .product-thumbnail {
-      width: 63px;
-      height: 72px;
-      overflow: hidden; /* Ensures any overflowing part of the image is hidden */
-    }
-  </style>
 </head>
 <body>
-  <header>
-    <h1>Ink N Threadworks Catalog</h1>
+  <header class="site-header">
+    <h1>Ink N Threadworks</h1>
+    <nav aria-label="Main Navigation">
+      <a href="index.html" class="btn">Home</a>
+      <a href="catalog.html" class="btn active">Catalog</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="contact.html" class="btn">Contact</a>
+    </nav>
   </header>
 
-  <section id="brandBar">
-    <div id="brandLogos" class="brand-logo-container">
+  <main class="page-container">
+    <h2>Product Catalog</h2>
+    <section id="brandBar" class="brand-logo-bar">
       <!-- Brand logos will be inserted here by JS -->
-    </div>
-  </section>
+    </section>
 
-  <section id="filtersContainer">
-    <!-- Filter inputs populated by JS -->
-  </section>
+    <section id="filtersContainer" class="filters">
+      <!-- Filter inputs populated by JS -->
+    </section>
 
-  <main>
     <div id="productContainer" class="product-grid">
       <!-- Product cards will be rendered here -->
+    </div>
+    <div id="pageButtons" class="pagination">
+      <!-- Pagination buttons inserted by JS -->
     </div>
   </main>
 
   <footer>
-    <div id="pageButtons" class="pagination">
-      <!-- Pagination buttons inserted by JS -->
-    </div>
+    <p>&copy; 2025 Ink N Threadworks. All rights reserved.</p>
   </footer>
 
   <script src="catalog.js"></script>
