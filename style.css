@@ -50,6 +50,23 @@ body {
   box-sizing: border-box;
 }
 
+/* --- Home Page Specific --- */
+.home-actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background-color: #0073e6;
+  font-size: 1.1rem;
+  padding: 12px 24px;
+  margin: 0 10px;
+}
+
+.btn-primary:hover {
+  background-color: #005bb5;
+}
+
 /* --- Catalog Filters --- */
 .filters {
   display: flex;
