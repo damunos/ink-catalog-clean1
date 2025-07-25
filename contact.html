@@ -4,53 +4,23 @@
   <meta charset="UTF-8" />
   <title>Quote Request | Ink N Threadworks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background-color: #f9f9f9;
-    }
-    form {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-    }
-    input, textarea, select, button {
-      width: 100%;
-      padding: 0.75rem;
-      margin-top: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      background: #0073e6;
-      color: #fff;
-      border: none;
-      margin-top: 1.5rem;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #005bb5;
-    }
-    small {
-      display: block;
-      font-size: 0.8rem;
-      color: #666;
-      margin-top: 0.5rem;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Request a Quote</h1>
+  <header class="site-header">
+    <h1>Ink N Threadworks</h1>
+    <nav aria-label="Main Navigation">
+      <a href="index.html" class="btn">Home</a>
+      <a href="catalog.html" class="btn">Catalog</a>
+      <a href="about.html" class="btn">About Us</a>
+      <a href="contact.html" class="btn active">Contact</a>
+    </nav>
+  </header>
 
-  <form id="quoteForm" action="https://formsubmit.co/el/katami" method="POST">
+  <main class="page-container">
+    <h2>Request a Quote</h2>
+
+    <form id="quoteForm" action="https://formsubmit.co/el/katami" method="POST">
     <input type="hidden" name="_subject" value="New Quote Request - Ink N Threadworks">
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="artwork_link" id="artworkLink" />
@@ -86,36 +56,57 @@
     <input type="file" id="artFile" accept=".pdf,.eps,.ai,.svg,.jpg,.jpeg,.png,.zip" />
     <small>If submitted as PDF/EPS/AI and 300 DPI+, no art charges apply.</small>
 
-    <button type="submit">Send Quote Request</button>
+    <button type="submit" id="submitBtn">Send Quote Request</button>
   </form>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Ink N Threadworks. All rights reserved.</p>
+  </footer>
 
   <script>
     const form = document.getElementById('quoteForm');
     const fileInput = document.getElementById('artFile');
     const artworkLink = document.getElementById('artworkLink');
+    const submitBtn = document.getElementById('submitBtn');
 
     form.addEventListener('submit', async (e) => {
-      if (fileInput.files.length > 0) {
-        e.preventDefault();
-        const file = fileInput.files[0];
-        const data = new FormData();
-        data.append('file', file);
+      // Only intercept for file upload
+      if (fileInput.files.length === 0) {
+        return; // Allow normal form submission
+      }
 
-        try {
-          const res = await fetch('https://file.io/?expires=14d', {
-            method: 'POST',
-            body: data
-          });
-          const json = await res.json();
-          if (json.success && json.link) {
-            artworkLink.value = json.link;
-            form.submit();
-          } else {
-            alert('File upload failed. Please try again or use another file type.');
-          }
-        } catch (err) {
-          console.error(err);
-          alert('Error uploading file. Please try again later.');
+      e.preventDefault(); // Stop form submission to handle file upload
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading artwork...';
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('https://file.io/?expires=14d', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+
+        if (result.success && result.link) {
+          artworkLink.value = result.link;
+          submitBtn.textContent = 'Submitting form...';
+          form.submit(); // Re-submit the form, now with the file link
+        } else {
+          alert(`File upload failed: ${result.message || 'Please try again.'}`);
+        }
+      } catch (error) {
+        console.error('File upload error:', error);
+        alert('An error occurred during file upload. Please check the console and try again.');
+      } finally {
+        // Re-enable the button if submission fails to allow user to retry
+        if (!artworkLink.value) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Quote Request';
         }
       }
     });

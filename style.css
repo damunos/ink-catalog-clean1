@@ -3,16 +3,54 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-h1 {
+/* --- Header & Navigation --- */
+.site-header {
   background-color: #222;
   color: #fff;
-  padding: 20px;
+  padding: 1rem;
   margin: 0;
   text-align: center;
 }
 
+.site-header h1 {
+  margin: 0 0 1rem;
+}
+
+.site-header nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  text-decoration: none;
+  color: #fff;
+  background-color: #555;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn:hover, .btn.active {
+  background-color: #0073e6;
+}
+
+/* --- Main Content & Page Layout --- */
+.page-container {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- Catalog Filters --- */
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -41,6 +79,7 @@ h1 {
   background-color: #333;
 }
 
+/* --- Catalog Brand Bar --- */
 .brand-logo-bar {
   display: flex;
   flex-wrap: wrap;
@@ -64,6 +103,7 @@ h1 {
   border-color: #444;
 }
 
+/* --- Catalog Product Grid --- */
 #productContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -155,6 +195,7 @@ h1 {
   border-radius: 50%;
 }
 
+/* --- Catalog Pagination --- */
 #pageButtons {
   text-align: center;
   padding: 20px;
@@ -175,6 +216,57 @@ h1 {
   color: white;
 }
 
+/* --- Contact Form --- */
+form {
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+form input, form textarea, form select, form button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Important for 100% width */
+}
+
+form button {
+  background: #0073e6;
+  color: #fff;
+  border: none;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+form button:hover {
+  background: #005bb5;
+}
+
+form button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+form small {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* --- Media Queries --- */
 @media (max-width: 600px) {
   .brand-logo {
     height: 40px;
@@ -190,4 +282,12 @@ h1 {
   .product-description {
     font-size: 12px;
   }
+}
+
+/* --- Footer --- */
+footer {
+  background-color: #222;
+  color: #aaa;
+  text-align: center;
+  padding: 20px;
 }
