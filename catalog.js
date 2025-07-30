@@ -75,7 +75,6 @@ async function loadProducts() {
 }
 
 function loadBrandLogos() {
-  const container = document.getElementById("brandLogos");
   const container = document.getElementById("brand-logos");
 
   const brands = [...new Set(allProducts.map(p => p.BRAND_NAME).filter(Boolean))].sort();
@@ -96,6 +95,7 @@ function loadBrandLogos() {
     container.appendChild(img);
   });
 }
+
 
 function setupFilters() {
   const container = document.getElementById("filtersContainer");
