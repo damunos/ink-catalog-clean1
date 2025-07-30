@@ -76,7 +76,7 @@ async function loadProducts() {
 
 function loadBrandLogos() {
   const container = document.getElementById("brandLogos");
-  container.innerHTML = "";
+  const container = document.getElementById("brand-logos");
 
   const brands = [...new Set(allProducts.map(p => p.BRAND_NAME).filter(Boolean))].sort();
   brands.forEach(brand => {
