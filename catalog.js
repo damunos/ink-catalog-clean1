@@ -1,97 +1,168 @@
-// catalog.js (NO brand logo code!)
+// catalog.js
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
-});
+// Configuration
+const PRODUCTS_CSV = 'sanmar_catalog_part1.csv'; // Change if using a different csv file name
+const PRODUCTS_PER_PAGE = 24;
 
+// State
 let products = [];
 let filteredProducts = [];
-let categories = new Set();
-let colors = new Set();
+let categories = [];
+let colors = [];
+let currentPage = 1;
 
-async function loadProducts() {
-  // Load CSV or product data here (replace with your actual method!)
-  // For demonstration, use a mock array.
-  products = [
-    {
-      name: "T-Shirt",
-      category: "Apparel",
-      color: "Black",
-      price: 9.99,
-      image: "img/tshirt-black.jpg",
-      description: "Classic black t-shirt."
-    },
-    {
-      name: "Hoodie",
-      category: "Apparel",
-      color: "Gray",
-      price: 19.99,
-      image: "img/hoodie-gray.jpg",
-      description: "Cozy gray hoodie."
+// DOM Elements
+const filtersContainer = document.getElementById('filtersContainer');
+const productContainer = document.getElementById('productContainer');
+const pageButtons = document.getElementById('pageButtons');
+
+// 1. CSV Parsing
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const values = [];
+    let inQuotes = false;
+    let value = '';
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') {
+        inQuotes = !inQuotes;
+      } else if (c === ',' && !inQuotes) {
+        values.push(value);
+        value = '';
+      } else {
+        value += c;
+      }
     }
-    // ... more products
-  ];
-
-  // Populate categories and colors from product data
-  products.forEach(prod => {
-    categories.add(prod.category);
-    colors.add(prod.color);
+    values.push(value);
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header.trim()] = values[i]?.trim() || '';
+    });
+    return obj;
   });
-
-  filteredProducts = products; // Default is all products
-
-  renderFilters();
-  renderProducts();
 }
 
-function renderFilters() {
-  const container = document.getElementById("filtersContainer");
-  container.innerHTML = `
-    <select id="categoryFilter">
-      <option value="">All Categories</option>
-      ${Array.from(categories).map(cat => `<option value="${cat}">${cat}</option>`).join('')}
-    </select>
-    <select id="colorFilter">
-      <option value="">All Colors</option>
-      ${Array.from(colors).map(color => `<option value="${color}">${color}</option>`).join('')}
-    </select>
-    <button id="clearFilters">Clear Filters</button>
-  `;
-
-  document.getElementById("categoryFilter").addEventListener("change", filterProducts);
-  document.getElementById("colorFilter").addEventListener("change", filterProducts);
-  document.getElementById("clearFilters").addEventListener("click", () => {
-    document.getElementById("categoryFilter").value = "";
-    document.getElementById("colorFilter").value = "";
+// 2. Load CSV Products
+async function loadProducts() {
+  try {
+    const res = await fetch(PRODUCTS_CSV);
+    if (!res.ok) throw new Error('Could not load product catalog!');
+    const csv = await res.text();
+    products = parseCSV(csv);
+    updateCategoryColorLists();
+    renderFilters();
     filterProducts();
-  });
+  } catch (err) {
+    productContainer.innerHTML = `<p class="error">Error loading catalog: ${err.message}</p>`;
+  }
 }
 
+// 3. Extract Category & Color Lists
+function updateCategoryColorLists() {
+  const categorySet = new Set();
+  const colorSet = new Set();
+  for (const p of products) {
+    if (p['CATEGORY_NAME']) categorySet.add(p['CATEGORY_NAME']);
+    if (p['COLOR_NAME']) colorSet.add(p['COLOR_NAME']);
+  }
+  categories = Array.from(categorySet).sort();
+  colors = Array.from(colorSet).sort();
+}
+
+// 4. Render Filters
+function renderFilters() {
+  if (!filtersContainer) return;
+  filtersContainer.innerHTML = `
+    <label>
+      Category:
+      <select id="categoryFilter">
+        <option value="">All</option>
+        ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+      </select>
+    </label>
+    <label>
+      Color:
+      <select id="colorFilter">
+        <option value="">All</option>
+        ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
+      </select>
+    </label>
+    <label>
+      Search:
+      <input id="searchFilter" placeholder="Product name, style, etc." />
+    </label>
+  `;
+  document.getElementById('categoryFilter').onchange = filterProducts;
+  document.getElementById('colorFilter').onchange = filterProducts;
+  document.getElementById('searchFilter').oninput = filterProducts;
+}
+
+// 5. Filter Logic
 function filterProducts() {
-  const category = document.getElementById("categoryFilter").value;
-  const color = document.getElementById("colorFilter").value;
-
-  filteredProducts = products.filter(prod =>
-    (category === "" || prod.category === category) &&
-    (color === "" || prod.color === color)
+  const category = document.getElementById('categoryFilter')?.value || '';
+  const color = document.getElementById('colorFilter')?.value || '';
+  const search = document.getElementById('searchFilter')?.value.toLowerCase() || '';
+  filteredProducts = products.filter(p =>
+    (!category || p['CATEGORY_NAME'] === category) &&
+    (!color || p['COLOR_NAME'] === color) &&
+    (!search ||
+      (p['PRODUCT_TITLE'] && p['PRODUCT_TITLE'].toLowerCase().includes(search)) ||
+      (p['PRODUCT_DESCRIPTION'] && p['PRODUCT_DESCRIPTION'].toLowerCase().includes(search)) ||
+      (p['STYLE#'] && p['STYLE#'].toLowerCase().includes(search))
+    )
   );
-
+  currentPage = 1;
   renderProducts();
+  renderPagination();
 }
 
+// 6. Product Cards
 function renderProducts() {
-  const container = document.getElementById("productContainer");
+  if (!productContainer) return;
   if (!filteredProducts.length) {
-    container.innerHTML = "<p>No products found.</p>";
+    productContainer.innerHTML = `<p>No products found.</p>`;
     return;
   }
+  const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const pageProducts = filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
 
-  container.innerHTML = filteredProducts.map(prod => `
-    <div class="product-card">
-      <img src="${prod.image}" alt="${prod.name}" />
-      <h3>${prod.name}</h3>
-      <p>${prod.description}</p>
-      <span class="price">$${prod.price.toFixed(2)}</span>
-    </div>
-  `).join('');
+  productContainer.innerHTML = pageProducts.map(p => {
+    const imgSrc = p['THUMBNAIL_IMAGE'] ? `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${p['THUMBNAIL_IMAGE']}` : 'placeholder.png';
+    return `
+      <div class="product-card">
+        <img src="${imgSrc}" alt="${p['PRODUCT_TITLE'] || ''}" loading="lazy" onerror="this.src='placeholder.png'">
+        <div class="product-info">
+          <div class="product-title">${p['PRODUCT_TITLE'] || ''}</div>
+          <div class="product-style">${p['STYLE#'] || ''}</div>
+          <div class="product-desc">${(p['PRODUCT_DESCRIPTION'] || '').substring(0, 60)}${(p['PRODUCT_DESCRIPTION'] && p['PRODUCT_DESCRIPTION'].length > 60) ? '...' : ''}</div>
+          <div class="product-color">${p['COLOR_NAME'] || ''}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
+
+// 7. Pagination
+function renderPagination() {
+  if (!pageButtons) return;
+  const pages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  if (pages <= 1) {
+    pageButtons.innerHTML = '';
+    return;
+  }
+  let html = '';
+  for (let i = 1; i <= pages; i++) {
+    html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  pageButtons.innerHTML = html;
+}
+window.goToPage = function(n) {
+  currentPage = n;
+  renderProducts();
+  renderPagination();
+};
+
+// 8. INIT
+window.addEventListener('DOMContentLoaded', loadProducts);
