@@ -63,7 +63,7 @@ async function loadProducts() {
   rawProducts.forEach(product => {
     const style = product["STYLE#"];
     const title = product.PRODUCT_TITLE?.toLowerCase() ?? '';
-  
+
     if (!style || title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
   });
@@ -76,7 +76,6 @@ async function loadProducts() {
 
 function loadBrandLogos() {
   const container = document.getElementById("brand-logos");
-  document.getElementById('brandBar').innerHTML = logosHTML;
 
   const brands = [...new Set(allProducts.map(p => p.BRAND_NAME).filter(Boolean))].sort();
   brands.forEach(brand => {
@@ -96,7 +95,6 @@ function loadBrandLogos() {
     container.appendChild(img);
   });
 }
-
 
 function setupFilters() {
   const container = document.getElementById("filtersContainer");
@@ -162,16 +160,12 @@ function renderProducts() {
     const div = document.createElement("div");
     div.className = "product";
 
-    // Create the image element
     const img = document.createElement("img");
-    if (product.COLOR_PRODUCT_IMAGE_THUMBNAIL) {
-      img.src = `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.COLOR_PRODUCT_IMAGE_THUMBNAIL}`;
-    } else {
-      img.src = "placeholder.jpg"; // Fallback for missing images
-    }
+    img.src = product.COLOR_PRODUCT_IMAGE_THUMBNAIL
+      ? `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.COLOR_PRODUCT_IMAGE_THUMBNAIL}`
+      : "placeholder.jpg";
     img.alt = product.PRODUCT_TITLE;
 
-    // Add the rest of the product details
     div.innerHTML = `
       <div class="product-thumbnail"></div>
       <div class="product-style">${product["STYLE#"]}</div>
@@ -180,9 +174,7 @@ function renderProducts() {
       <div class="product-price">${product.MSRP ? `$${product.MSRP}` : ""}</div>
     `;
 
-    // Append the image to the product thumbnail container
     div.querySelector(".product-thumbnail").appendChild(img);
-
     container.appendChild(div);
   });
 
