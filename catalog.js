@@ -64,30 +64,27 @@ async function loadProducts() {
 
     if (!style || title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
-  };
+  }); // <-- FIXED this parenthesis
 
   allProducts = [...deduped.values()];
   populateFilters();
   applyFilters();
- 
 }
 
 function setupFilters() {
   const container = document.getElementById("filtersContainer");
-container.innerHTML = `
-  <input type="text" id="searchInput" placeholder="Search products..."/>
-  <label for="colorFilter">Color</label>
-  <select id="colorFilter"></select>
-  <label for="categoryFilter">Category</label>
-  <select id="categoryFilter"></select>
-`;
-
+  container.innerHTML = `
+    <input type="text" id="searchInput" placeholder="Search products..."/>
+    <label for="colorFilter">Color</label>
+    <select id="colorFilter"></select>
+    <label for="categoryFilter">Category</label>
+    <select id="categoryFilter"></select>
+  `;
 
   document.getElementById("searchInput").oninput = applyFilters;
   document.getElementById("colorFilter").onchange = applyFilters;
   document.getElementById("categoryFilter").onchange = applyFilters;
 }
-
 
 function populateFilters() {
   const colorSet = new Set();
