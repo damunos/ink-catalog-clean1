@@ -1,168 +1,208 @@
 // catalog.js
 
-// Configuration
-const PRODUCTS_CSV = 'sanmar_catalog_part1.csv'; // Change if using a different csv file name
-const PRODUCTS_PER_PAGE = 24;
-
-// State
-let products = [];
+let allProducts = [];
 let filteredProducts = [];
-let categories = [];
-let colors = [];
 let currentPage = 1;
+const productsPerPage = 36;
 
-// DOM Elements
-const filtersContainer = document.getElementById('filtersContainer');
-const productContainer = document.getElementById('productContainer');
-const pageButtons = document.getElementById('pageButtons');
+const colorMap = {
+  red: ["red", "crimson", "maroon", "burgundy"],
+  green: ["green", "olive", "lime", "mint", "aloe"],
+  blue: ["blue", "navy", "aqua", "teal", "turquoise"],
+  yellow: ["yellow", "gold", "lemon"],
+  orange: ["orange", "coral"],
+  purple: ["purple", "lavender", "plum", "violet"],
+  pink: ["pink", "fuchsia", "rose", "blush"],
+  black: ["black", "charcoal"],
+  white: ["white", "ivory"],
+  gray: ["gray", "grey", "silver", "ash"],
+  brown: ["brown", "khaki", "tan", "beige"],
+};
 
-// 1. CSV Parsing
-function parseCSV(text) {
-  const lines = text.trim().split('\n');
-  const headers = lines[0].split(',');
-  return lines.slice(1).map(line => {
-    const values = [];
+function getGeneralColor(colorName) {
+  const firstColorWord = colorName?.split(" ")[0]?.toLowerCase() || "";
+  for (const [general, keywords] of Object.entries(colorMap)) {
+    if (keywords.some(keyword => firstColorWord.includes(keyword))) {
+      return general;
+    }
+  }
+  return "other";
+}
+
+function parseCSV(csv) {
+  const [headersLine, ...lines] = csv.trim().split("\n");
+  const headers = headersLine.split(",").map(h => h.trim());
+
+  return lines.map(line => {
+    const parts = [];
     let inQuotes = false;
-    let value = '';
-    for (let i = 0; i < line.length; i++) {
-      const c = line[i];
-      if (c === '"') {
-        inQuotes = !inQuotes;
-      } else if (c === ',' && !inQuotes) {
-        values.push(value);
-        value = '';
+    let current = "";
+
+    for (const char of line) {
+      if (char === '"' && inQuotes) inQuotes = false;
+      else if (char === '"' && !inQuotes) inQuotes = true;
+      else if (char === ',' && !inQuotes) {
+        parts.push(current);
+        current = "";
       } else {
-        value += c;
+        current += char;
       }
     }
-    values.push(value);
-    const obj = {};
-    headers.forEach((header, i) => {
-      obj[header.trim()] = values[i]?.trim() || '';
-    });
-    return obj;
+    parts.push(current);
+    return Object.fromEntries(headers.map((key, i) => [key, parts[i] ?? ""]));
   });
 }
 
-// 2. Load CSV Products
 async function loadProducts() {
-  try {
-    const res = await fetch(PRODUCTS_CSV);
-    if (!res.ok) throw new Error('Could not load product catalog!');
-    const csv = await res.text();
-    products = parseCSV(csv);
-    updateCategoryColorLists();
-    renderFilters();
-    filterProducts();
-  } catch (err) {
-    productContainer.innerHTML = `<p class="error">Error loading catalog: ${err.message}</p>`;
-  }
+  const csv1 = await fetch("sanmar_catalog_part1.csv").then(r => r.text());
+  const csv2 = await fetch("sanmar_catalog_part2.csv").then(r => r.text());
+
+  const rawProducts = [...parseCSV(csv1), ...parseCSV(csv2)];
+  const deduped = new Map();
+
+  rawProducts.forEach(product => {
+    const style = product["STYLE#"];
+    const title = product.PRODUCT_TITLE?.toLowerCase() ?? '';
+
+    if (!style || title.includes("discontinued")) return;
+    if (!deduped.has(style)) deduped.set(style, product);
+  });
+
+  allProducts = [...deduped.values()];
+  populateFilters();
+  applyFilters();
+  loadBrandLogos();
 }
 
-// 3. Extract Category & Color Lists
-function updateCategoryColorLists() {
-  const categorySet = new Set();
-  const colorSet = new Set();
-  for (const p of products) {
-    if (p['CATEGORY_NAME']) categorySet.add(p['CATEGORY_NAME']);
-    if (p['COLOR_NAME']) colorSet.add(p['COLOR_NAME']);
-  }
-  categories = Array.from(categorySet).sort();
-  colors = Array.from(colorSet).sort();
+function loadBrandLogos() {
+  const container = document.getElementById("brand-logos");
+
+  const brands = [...new Set(allProducts.map(p => p.BRAND_NAME).filter(Boolean))].sort();
+  brands.forEach(brand => {
+    const img = document.createElement("img");
+    img.src = `SDL/BRAND_LOGO_IMAGE/${brand.toLowerCase()}header.jpg`;
+    img.alt = brand;
+    img.className = "brand-logo";
+    img.dataset.brand = brand;
+    img.onerror = () => { img.src = "SDL/BRAND_LOGO_IMAGE/placeholder.jpg"; };
+
+    img.addEventListener("click", () => {
+      filteredProducts = allProducts.filter(p => p.BRAND_NAME === brand);
+      currentPage = 1;
+      renderProducts();
+    });
+
+    container.appendChild(img);
+  });
 }
 
-// 4. Render Filters
-function renderFilters() {
-  if (!filtersContainer) return;
-  filtersContainer.innerHTML = `
-    <label>
-      Category:
-      <select id="categoryFilter">
-        <option value="">All</option>
-        ${categories.map(cat => `<option value="${cat}">${cat}</option>`).join('')}
-      </select>
-    </label>
-    <label>
-      Color:
-      <select id="colorFilter">
-        <option value="">All</option>
-        ${colors.map(color => `<option value="${color}">${color}</option>`).join('')}
-      </select>
-    </label>
-    <label>
-      Search:
-      <input id="searchFilter" placeholder="Product name, style, etc." />
-    </label>
+function setupFilters() {
+  const container = document.getElementById("filtersContainer");
+  container.innerHTML = `
+    <input type="text" id="searchInput" placeholder="Search products..."/>
+    <select id="colorFilter"></select>
+    <select id="categoryFilter"></select>
   `;
-  document.getElementById('categoryFilter').onchange = filterProducts;
-  document.getElementById('colorFilter').onchange = filterProducts;
-  document.getElementById('searchFilter').oninput = filterProducts;
+
+  document.getElementById("searchInput").oninput = applyFilters;
+  document.getElementById("colorFilter").onchange = applyFilters;
+  document.getElementById("categoryFilter").onchange = applyFilters;
 }
 
-// 5. Filter Logic
-function filterProducts() {
-  const category = document.getElementById('categoryFilter')?.value || '';
-  const color = document.getElementById('colorFilter')?.value || '';
-  const search = document.getElementById('searchFilter')?.value.toLowerCase() || '';
-  filteredProducts = products.filter(p =>
-    (!category || p['CATEGORY_NAME'] === category) &&
-    (!color || p['COLOR_NAME'] === color) &&
-    (!search ||
-      (p['PRODUCT_TITLE'] && p['PRODUCT_TITLE'].toLowerCase().includes(search)) ||
-      (p['PRODUCT_DESCRIPTION'] && p['PRODUCT_DESCRIPTION'].toLowerCase().includes(search)) ||
-      (p['STYLE#'] && p['STYLE#'].toLowerCase().includes(search))
-    )
-  );
+function populateFilters() {
+  const colorSet = new Set();
+  const categorySet = new Set();
+
+  allProducts.forEach(p => {
+    const genColor = getGeneralColor(p.COLOR_NAME);
+    if (genColor) colorSet.add(genColor);
+    if (p.CATEGORY_NAME) categorySet.add(p.CATEGORY_NAME);
+  });
+
+  const colorFilter = document.getElementById("colorFilter");
+  const categoryFilter = document.getElementById("categoryFilter");
+
+  colorFilter.innerHTML = `<option value="">All Colors</option>` +
+    [...colorSet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
+  categoryFilter.innerHTML = `<option value="">All Categories</option>` +
+    [...categorySet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
+}
+
+function applyFilters() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const color = document.getElementById("colorFilter").value;
+  const category = document.getElementById("categoryFilter").value;
+
+  filteredProducts = allProducts.filter(p => {
+    const matchesSearch =
+      p.PRODUCT_TITLE?.toLowerCase().includes(search) ||
+      p.PRODUCT_DESCRIPTION?.toLowerCase().includes(search) ||
+      p["STYLE#"]?.toLowerCase().includes(search);
+
+    const matchesColor = !color || getGeneralColor(p.COLOR_NAME) === color;
+    const matchesCategory = !category || p.CATEGORY_NAME === category;
+
+    return matchesSearch && matchesColor && matchesCategory;
+  });
+
   currentPage = 1;
   renderProducts();
-  renderPagination();
 }
 
-// 6. Product Cards
 function renderProducts() {
-  if (!productContainer) return;
-  if (!filteredProducts.length) {
-    productContainer.innerHTML = `<p>No products found.</p>`;
-    return;
-  }
-  const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
-  const pageProducts = filteredProducts.slice(start, start + PRODUCTS_PER_PAGE);
+  const container = document.getElementById("productContainer");
+  container.innerHTML = "";
 
-  productContainer.innerHTML = pageProducts.map(p => {
-    const imgSrc = p['THUMBNAIL_IMAGE'] ? `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${p['THUMBNAIL_IMAGE']}` : 'placeholder.png';
-    return `
-      <div class="product-card">
-        <img src="${imgSrc}" alt="${p['PRODUCT_TITLE'] || ''}" loading="lazy" onerror="this.src='placeholder.png'">
-        <div class="product-info">
-          <div class="product-title">${p['PRODUCT_TITLE'] || ''}</div>
-          <div class="product-style">${p['STYLE#'] || ''}</div>
-          <div class="product-desc">${(p['PRODUCT_DESCRIPTION'] || '').substring(0, 60)}${(p['PRODUCT_DESCRIPTION'] && p['PRODUCT_DESCRIPTION'].length > 60) ? '...' : ''}</div>
-          <div class="product-color">${p['COLOR_NAME'] || ''}</div>
-        </div>
-      </div>
+  const start = (currentPage - 1) * productsPerPage;
+  const end = start + productsPerPage;
+
+  filteredProducts.slice(start, end).forEach(product => {
+    const div = document.createElement("div");
+    div.className = "product";
+
+    const img = document.createElement("img");
+    img.src = product.COLOR_PRODUCT_IMAGE_THUMBNAIL
+      ? `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.COLOR_PRODUCT_IMAGE_THUMBNAIL}`
+      : "placeholder.jpg";
+    img.alt = product.PRODUCT_TITLE;
+
+    div.innerHTML = `
+      <div class="product-thumbnail"></div>
+      <div class="product-style">${product["STYLE#"]}</div>
+      <div class="product-title">${product.PRODUCT_TITLE}</div>
+      <div class="product-description" title="${product.PRODUCT_DESCRIPTION}">${product.PRODUCT_DESCRIPTION}</div>
+      <div class="product-price">${product.MSRP ? `$${product.MSRP}` : ""}</div>
     `;
-  }).join('');
-}
 
-// 7. Pagination
-function renderPagination() {
-  if (!pageButtons) return;
-  const pages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-  if (pages <= 1) {
-    pageButtons.innerHTML = '';
-    return;
-  }
-  let html = '';
-  for (let i = 1; i <= pages; i++) {
-    html += `<button class="page-btn${i === currentPage ? ' active' : ''}" onclick="goToPage(${i})">${i}</button>`;
-  }
-  pageButtons.innerHTML = html;
-}
-window.goToPage = function(n) {
-  currentPage = n;
-  renderProducts();
+    div.querySelector(".product-thumbnail").appendChild(img);
+    container.appendChild(div);
+  });
+
   renderPagination();
-};
+}
 
-// 8. INIT
-window.addEventListener('DOMContentLoaded', loadProducts);
+function renderPagination() {
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const pagination = document.getElementById("pageButtons");
+  pagination.innerHTML = "";
+
+  const maxButtons = 10;
+  const start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+  const end = Math.min(totalPages, start + maxButtons - 1);
+
+  for (let i = start; i <= end; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === currentPage) btn.classList.add("active");
+    btn.onclick = () => {
+      currentPage = i;
+      renderProducts();
+    };
+    pagination.appendChild(btn);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupFilters();
+  loadProducts();
+});
