@@ -1,5 +1,3 @@
-// catalog.js
-
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
@@ -71,10 +69,7 @@ async function loadProducts() {
   allProducts = [...deduped.values()];
   populateFilters();
   applyFilters();
-  loadBrandLogos();
-}
-    container.appendChild(img);
-  });
+  // loadBrandLogos(); // <-- Remove this line (no more brand logos)
 }
 
 function setupFilters() {
