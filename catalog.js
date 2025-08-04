@@ -76,7 +76,9 @@ function setupFilters() {
   const container = document.getElementById("filtersContainer");
   container.innerHTML = `
     <input type="text" id="searchInput" placeholder="Search products..."/>
+    <label for="colorFilter">Color</label>
     <select id="colorFilter"></select>
+    <label for="categoryFilter">Category</label>
     <select id="categoryFilter"></select>
   `;
 
@@ -84,6 +86,7 @@ function setupFilters() {
   document.getElementById("colorFilter").onchange = applyFilters;
   document.getElementById("categoryFilter").onchange = applyFilters;
 }
+
 
 function populateFilters() {
   const colorSet = new Set();
