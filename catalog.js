@@ -73,25 +73,6 @@ async function loadProducts() {
   applyFilters();
   loadBrandLogos();
 }
-
-function loadBrandLogos() {
-  const container = document.getElementById("brand-logos");
-
-  const brands = [...new Set(allProducts.map(p => p.BRAND_NAME).filter(Boolean))].sort();
-  brands.forEach(brand => {
-    const img = document.createElement("img");
-    img.src = `SDL/BRAND_LOGO_IMAGE/${brand.toLowerCase()}header.jpg`;
-    img.alt = brand;
-    img.className = "brand-logo";
-    img.dataset.brand = brand;
-    img.onerror = () => { img.src = "SDL/BRAND_LOGO_IMAGE/placeholder.jpg"; };
-
-    img.addEventListener("click", () => {
-      filteredProducts = allProducts.filter(p => p.BRAND_NAME === brand);
-      currentPage = 1;
-      renderProducts();
-    });
-
     container.appendChild(img);
   });
 }
