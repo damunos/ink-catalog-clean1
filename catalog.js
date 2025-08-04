@@ -74,13 +74,14 @@ async function loadProducts() {
 
 function setupFilters() {
   const container = document.getElementById("filtersContainer");
-  container.innerHTML = `
-    <input type="text" id="searchInput" placeholder="Search products..."/>
-    <label for="colorFilter">Color</label>
-    <select id="colorFilter"></select>
-    <label for="categoryFilter">Category</label>
-    <select id="categoryFilter"></select>
-  `;
+container.innerHTML = `
+  <input type="text" id="searchInput" placeholder="Search products..."/>
+  <label for="colorFilter">Color</label>
+  <select id="colorFilter"></select>
+  <label for="categoryFilter">Category</label>
+  <select id="categoryFilter"></select>
+`;
+
 
   document.getElementById("searchInput").oninput = applyFilters;
   document.getElementById("colorFilter").onchange = applyFilters;
