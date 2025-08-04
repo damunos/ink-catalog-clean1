@@ -64,12 +64,12 @@ async function loadProducts() {
 
     if (!style || title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
-  });
+  };
 
   allProducts = [...deduped.values()];
   populateFilters();
   applyFilters();
-  // loadBrandLogos(); // <-- Remove this line (no more brand logos)
+ 
 }
 
 function setupFilters() {
