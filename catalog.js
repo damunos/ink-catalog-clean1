@@ -1,3 +1,5 @@
+// catalog.js
+
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
@@ -36,10 +38,17 @@ function parseCSV(csv) {
     let inQuotes = false;
     let current = "";
 
-    for (const char of line) {
-      if (char === '"' && inQuotes) inQuotes = false;
-      else if (char === '"' && !inQuotes) inQuotes = true;
-      else if (char === ',' && !inQuotes) {
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"' && inQuotes && line[i + 1] === '"') {
+        // Escaped double quote
+        current += '"';
+        i++; // skip the next char
+      } else if (char === '"' && inQuotes) {
+        inQuotes = false;
+      } else if (char === '"' && !inQuotes) {
+        inQuotes = true;
+      } else if (char === ',' && !inQuotes) {
         parts.push(current);
         current = "";
       } else {
@@ -64,7 +73,7 @@ async function loadProducts() {
 
     if (!style || title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
-  }); // <-- FIXED this parenthesis
+  });
 
   allProducts = [...deduped.values()];
   populateFilters();
@@ -74,11 +83,11 @@ async function loadProducts() {
 function setupFilters() {
   const container = document.getElementById("filtersContainer");
   container.innerHTML = `
-    <input type="text" id="searchInput" placeholder="Search products..."/>
+    <input type="text" id="searchInput" placeholder="Search products..." />
     <label for="colorFilter">Color</label>
-    <select id="colorFilter"></select>
+    <select id="colorFilter" title="Filter by color"></select>
     <label for="categoryFilter">Category</label>
-    <select id="categoryFilter"></select>
+    <select id="categoryFilter" title="Filter by category"></select>
   `;
 
   document.getElementById("searchInput").oninput = applyFilters;
@@ -100,7 +109,7 @@ function populateFilters() {
   const categoryFilter = document.getElementById("categoryFilter");
 
   colorFilter.innerHTML = `<option value="">All Colors</option>` +
-    [...colorSet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
+    [...colorSet].sort().map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</option>`).join("");
   categoryFilter.innerHTML = `<option value="">All Categories</option>` +
     [...categorySet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
 }
