@@ -1,4 +1,5 @@
 // catalog.js
+// Revision: debug-2024-08-03
 
 let allProducts = [];
 let filteredProducts = [];
@@ -30,6 +31,8 @@ function getGeneralColor(colorName) {
 }
 
 function parseCSV(csv) {
+  // Diag
+  console.log("Parsing CSV...");
   const [headersLine, ...lines] = csv.trim().split("\n");
   const headers = headersLine.split(",").map(h => h.trim());
 
@@ -41,9 +44,8 @@ function parseCSV(csv) {
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
       if (char === '"' && inQuotes && line[i + 1] === '"') {
-        // Escaped double quote
         current += '"';
-        i++; // skip the next char
+        i++;
       } else if (char === '"' && inQuotes) {
         inQuotes = false;
       } else if (char === '"' && !inQuotes) {
@@ -61,23 +63,33 @@ function parseCSV(csv) {
 }
 
 async function loadProducts() {
-  const csv1 = await fetch("sanmar_catalog_part1.csv").then(r => r.text());
-  const csv2 = await fetch("sanmar_catalog_part2.csv").then(r => r.text());
+  try {
+    console.log("Fetching CSV files...");
+    const csv1 = await fetch("sanmar_catalog_part1.csv").then(r => r.text());
+    const csv2 = await fetch("sanmar_catalog_part2.csv").then(r => r.text());
+    console.log("CSV1 Length:", csv1.length, "CSV2 Length:", csv2.length);
 
-  const rawProducts = [...parseCSV(csv1), ...parseCSV(csv2)];
-  const deduped = new Map();
+    const rawProducts = [...parseCSV(csv1), ...parseCSV(csv2)];
+    console.log("Total parsed products:", rawProducts.length);
 
-  rawProducts.forEach(product => {
-    const style = product["STYLE#"];
-    const title = product.PRODUCT_TITLE?.toLowerCase() ?? '';
+    const deduped = new Map();
 
-    if (!style || title.includes("discontinued")) return;
-    if (!deduped.has(style)) deduped.set(style, product);
-  });
+    rawProducts.forEach(product => {
+      const style = product["STYLE#"];
+      const title = product.PRODUCT_TITLE?.toLowerCase() ?? '';
 
-  allProducts = [...deduped.values()];
-  populateFilters();
-  applyFilters();
+      if (!style || title.includes("discontinued")) return;
+      if (!deduped.has(style)) deduped.set(style, product);
+    });
+
+    allProducts = [...deduped.values()];
+    console.log("Deduped products:", allProducts.length);
+
+    populateFilters();
+    applyFilters();
+  } catch (e) {
+    console.error("Failed to load products!", e);
+  }
 }
 
 function setupFilters() {
@@ -112,6 +124,11 @@ function populateFilters() {
     [...colorSet].sort().map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</option>`).join("");
   categoryFilter.innerHTML = `<option value="">All Categories</option>` +
     [...categorySet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
+
+  console.log("Filters populated:", {
+    colors: [...colorSet],
+    categories: [...categorySet]
+  });
 }
 
 function applyFilters() {
@@ -132,6 +149,7 @@ function applyFilters() {
   });
 
   currentPage = 1;
+  console.log("Products after filter:", filteredProducts.length);
   renderProducts();
 }
 
@@ -189,6 +207,7 @@ function renderPagination() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOM Loaded, setting up filters & loading products...");
   setupFilters();
   loadProducts();
 });
