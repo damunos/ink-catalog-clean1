@@ -81,6 +81,8 @@ async function loadProducts() {
     if (!style) return;
     if (!deduped.has(style)) deduped.set(style, product);
   });
+  console.log("Raw products sample:", rawProducts.slice(0,5));
+  console.log("First product keys:", Object.keys(rawProducts[0]));
 
   allProducts = [...deduped.values()];
   console.log("Deduped products loaded:", allProducts.length);
