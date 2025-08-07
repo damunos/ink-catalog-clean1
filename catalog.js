@@ -1,9 +1,11 @@
-// catalog.js -- debug enhanced -- 2025-08-03T15:55
+// catalog.js -- rev2025-08-03T16:12, built for Ink N Threadworks live catalog
+
 let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
 const productsPerPage = 36;
 
+// General color mapping
 const colorMap = {
   red: ["red", "crimson", "maroon", "burgundy"],
   green: ["green", "olive", "lime", "mint", "aloe"],
@@ -18,8 +20,9 @@ const colorMap = {
   brown: ["brown", "khaki", "tan", "beige"],
 };
 
+// Map a color name to general color
 function getGeneralColor(colorName) {
-  const firstColorWord = colorName?.split(" ")[0]?.toLowerCase() || "";
+  const firstColorWord = colorName?.split(/[ /]/)[0]?.toLowerCase() || "";
   for (const [general, keywords] of Object.entries(colorMap)) {
     if (keywords.some(keyword => firstColorWord.includes(keyword))) {
       return general;
@@ -28,29 +31,37 @@ function getGeneralColor(colorName) {
   return "other";
 }
 
+// Robust CSV parser (handles quoted fields)
 function parseCSV(csv) {
-  // Handles quoted fields and embedded commas
-  const lines = csv.trim().split("\n");
+  const lines = csv.replace(/\r/g, "").split("\n");
   const headers = lines[0].split(",").map(h => h.trim());
   const rows = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
-    let part = '', col = 0, inQuotes = false, row = [];
+    let line = lines[i];
+    if (!line.trim()) continue; // skip blank
+    let row = [];
+    let field = "";
+    let inQuotes = false;
     for (let j = 0; j < line.length; j++) {
-      const c = line[j];
-      if (c === '"') {
+      let char = line[j];
+      if (char === '"') {
         if (inQuotes && line[j + 1] === '"') {
-          part += '"'; j++;
-        } else { inQuotes = !inQuotes; }
-      } else if (c === ',' && !inQuotes) {
-        row.push(part); part = ''; col++;
-      } else { part += c; }
+          field += '"'; j++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === "," && !inQuotes) {
+        row.push(field);
+        field = "";
+      } else {
+        field += char;
+      }
     }
-    row.push(part);
-    const record = {};
-    headers.forEach((h, idx) => record[h] = row[idx] || "");
-    rows.push(record);
+    row.push(field);
+    let product = {};
+    headers.forEach((h, idx) => (product[h] = row[idx] ? row[idx].trim() : ""));
+    rows.push(product);
   }
   return rows;
 }
@@ -59,19 +70,21 @@ async function loadProducts() {
   console.log("Fetching CSV files...");
   const csv1 = await fetch("sanmar_catalog_part1.csv").then(r => r.text());
   const csv2 = await fetch("sanmar_catalog_part2.csv").then(r => r.text());
-
   const rawProducts = [...parseCSV(csv1), ...parseCSV(csv2)];
-  console.log("Raw products parsed:", rawProducts.length);
-  const deduped = new Map();
+  console.log("Parsed products from CSV:", rawProducts.length);
 
+  // Deduplicate by STYLE# and skip "discontinued"
+  const deduped = new Map();
   rawProducts.forEach(product => {
     const style = product["STYLE#"]?.trim();
-    const title = product.PRODUCT_TITLE?.toLowerCase().trim() ?? '';
-    if (!style || title.includes("discontinued")) return;
+    const title = product.PRODUCT_TITLE?.toLowerCase().trim() || "";
+    if (!style) return;
+    if (title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
   });
+
   allProducts = [...deduped.values()];
-  console.log("Deduped products:", allProducts.length, allProducts.slice(0, 5));
+  console.log("Deduped products loaded:", allProducts.length);
   populateFilters();
   applyFilters();
 }
@@ -107,6 +120,11 @@ function populateFilters() {
   document.getElementById("categoryFilter").innerHTML =
     `<option value="">All Categories</option>` +
     [...categorySet].sort().map(c => `<option value="${c}">${c}</option>`).join("");
+
+  console.log("Filters populated:", {
+    colors: [...colorSet],
+    categories: [...categorySet]
+  });
 }
 
 function applyFilters() {
@@ -116,9 +134,9 @@ function applyFilters() {
 
   filteredProducts = allProducts.filter(p => {
     const matchesSearch =
-      p.PRODUCT_TITLE?.toLowerCase().includes(search) ||
-      p.PRODUCT_DESCRIPTION?.toLowerCase().includes(search) ||
-      p["STYLE#"]?.toLowerCase().includes(search);
+      (p.PRODUCT_TITLE?.toLowerCase().includes(search) ?? false) ||
+      (p.PRODUCT_DESCRIPTION?.toLowerCase().includes(search) ?? false) ||
+      (p["STYLE#"]?.toLowerCase().includes(search) ?? false);
     const matchesColor = !color || getGeneralColor(p.COLOR_NAME) === color;
     const matchesCategory = !category || p.CATEGORY_NAME === category;
     return matchesSearch && matchesColor && matchesCategory;
@@ -126,6 +144,7 @@ function applyFilters() {
 
   currentPage = 1;
   renderProducts();
+  console.log("Products after filter:", filteredProducts.length);
 }
 
 function renderProducts() {
@@ -138,6 +157,7 @@ function renderProducts() {
   filteredProducts.slice(start, end).forEach(product => {
     const div = document.createElement("div");
     div.className = "product";
+
     const img = document.createElement("img");
     img.src = product.COLOR_PRODUCT_IMAGE_THUMBNAIL
       ? `SDL/COLOR_PRODUCT_IMAGE_THUMBNAIL/${product.COLOR_PRODUCT_IMAGE_THUMBNAIL}`
