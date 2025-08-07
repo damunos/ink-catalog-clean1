@@ -79,7 +79,6 @@ async function loadProducts() {
     const style = product["STYLE#"]?.trim();
     const title = product.PRODUCT_TITLE?.toLowerCase().trim() || "";
     if (!style) return;
-    if (title.includes("discontinued")) return;
     if (!deduped.has(style)) deduped.set(style, product);
   });
 
